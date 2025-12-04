@@ -18,14 +18,20 @@ export const getStartOfWeek = (date: Date = new Date()): Date => {
  */
 export const calculateTotalWords = (interactions: Interaction[]): number => {
   return interactions.reduce((total, interaction) => {
+    // Use intelligent mode output if available, otherwise use transcription
+    const adjustedTranscript =
+      interaction.llm_output?.adjustedTranscript?.trim()
     const transcript = interaction.asr_output?.transcript?.trim()
-    if (transcript) {
-      // Count words by splitting on whitespace and filtering out empty strings
-      const words = transcript
+
+    const textToCount = adjustedTranscript || transcript
+
+    if (textToCount) {
+      const words = textToCount
         .split(/\s+/)
         .filter((word: string) => word.length > 0)
       return total + words.length
     }
+
     return total
   }, 0)
 }
@@ -52,7 +58,9 @@ export const calculateWeeklyWordCount = (
 export const calculateAverageWPM = (interactions: Interaction[]): number => {
   const validInteractions = interactions.filter(
     interaction =>
-      interaction.asr_output?.transcript?.trim() && interaction.duration_ms,
+      (interaction.llm_output?.adjustedTranscript?.trim() ||
+        interaction.asr_output?.transcript?.trim()) &&
+      interaction.duration_ms,
   )
 
   if (validInteractions.length === 0) return 0
@@ -61,10 +69,15 @@ export const calculateAverageWPM = (interactions: Interaction[]): number => {
   let totalDurationMs = 0
 
   validInteractions.forEach(interaction => {
+    // Use intelligent mode output if available, otherwise use transcription
+    const adjustedTranscript =
+      interaction.llm_output?.adjustedTranscript?.trim()
     const transcript = interaction.asr_output?.transcript?.trim()
-    if (transcript && interaction.duration_ms) {
-      // Count words by splitting on whitespace and filtering out empty strings
-      const words = transcript
+
+    const textToCount = adjustedTranscript || transcript
+
+    if (textToCount && interaction.duration_ms) {
+      const words = textToCount
         .split(/\s+/)
         .filter((word: string) => word.length > 0)
       totalWords += words.length
