@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify'
 import Stripe from 'stripe'
-import { SubscriptionsRepository, TrialsRepository } from '../db/repo.js'
+import { SubscriptionsRepository } from '../db/repo.js'
 import {
   getAuth0ManagementToken,
   getUserInfoFromAuth0,
@@ -158,8 +158,7 @@ export const registerBillingRoutes = async (
         null, // Clear subscription_end_at when reactivating
       )
 
-      // End trial if applicable (idempotent - safe to call multiple times)
-      await TrialsRepository.completeTrial(userSub)
+
 
       reply.send({
         success: true,
@@ -205,22 +204,7 @@ export const registerBillingRoutes = async (
         return
       }
 
-      // Check for active trial
-      const trial = await TrialsRepository.getByUserId(userSub)
-      if (trial && !trial.has_completed_trial) {
-        // Cancel the Stripe trial subscription if it exists
-        if (trial.stripe_subscription_id) {
-          await stripe.subscriptions.cancel(trial.stripe_subscription_id)
-        }
-
-        // Mark trial as completed
-        await TrialsRepository.completeTrial(userSub)
-
-        reply.send({ success: true })
-        return
-      }
-
-      // No active subscription or trial found
+      // No active subscription found
       reply
         .code(400)
         .send({ success: false, error: 'No active subscription found' })
@@ -244,29 +228,9 @@ export const registerBillingRoutes = async (
       }
 
       const sub = await SubscriptionsRepository.getByUserId(userSub)
-      const trial = await TrialsRepository.getByUserId(userSub)
-
-      // Calculate trial days from database (synced from Stripe via webhooks)
-      const trialStartAt = trial?.trial_start_at
-      const trialEndAt = trial?.trial_end_at
-      const trialDays =
-        trialStartAt && trialEndAt
-          ? Math.ceil(
-              (trialEndAt.getTime() - trialStartAt.getTime()) /
-                (24 * 60 * 60 * 1000),
-            )
-          : 14 // Fallback to 14 if dates not available
 
       // If user has an active paid subscription, return that
       if (sub) {
-        const trialBlock = {
-          trialDays,
-          trialStartAt: trialStartAt ? trialStartAt.toISOString() : null,
-          daysLeft: 0,
-          isTrialActive: false,
-          hasCompletedTrial: true,
-        }
-
         const subscriptionEndAt = sub.subscription_end_at
         const isScheduledForCancellation =
           subscriptionEndAt !== null && subscriptionEndAt.getTime() > Date.now()
@@ -279,42 +243,12 @@ export const registerBillingRoutes = async (
             ? subscriptionEndAt.toISOString()
             : null,
           isScheduledForCancellation,
-          trial: trialBlock,
         })
         return
       }
 
-      // Calculate trial status from database (synced from Stripe via webhooks)
-      const now = Date.now()
-      const isTrialActive =
-        !!trialEndAt &&
-        now < trialEndAt.getTime() &&
-        !trial?.has_completed_trial
-
-      let daysLeft = 0
-      if (trialEndAt && isTrialActive) {
-        const remainingMs = trialEndAt.getTime() - now
-        daysLeft = Math.max(0, Math.ceil(remainingMs / (24 * 60 * 60 * 1000)))
-      }
-
-      const trialBlock = {
-        trialDays,
-        trialStartAt: trialStartAt ? trialStartAt.toISOString() : null,
-        daysLeft,
-        isTrialActive,
-        hasCompletedTrial: !!trial?.has_completed_trial,
-      }
-
-      if (isTrialActive) {
-        reply.send({
-          success: true,
-          pro_status: 'free_trial',
-          trial: trialBlock,
-        })
-        return
-      }
-
-      reply.send({ success: true, pro_status: 'none', trial: trialBlock })
+      // No active subscription
+      reply.send({ success: true, pro_status: 'none' })
     } catch (error: any) {
       reply
         .code(500)

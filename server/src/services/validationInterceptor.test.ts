@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect, mock } from 'bun:test'
 import { ConnectError } from '@connectrpc/connect'
 import { createValidator } from '@bufbuild/protovalidate'

@@ -190,29 +190,6 @@ export function registerIPC() {
     },
   )
 
-  // Start trial when onboarding completes
-  handleIPC('start-trial-after-onboarding', async () => {
-    const result = await itoHttpClient.post('/trial/start', undefined, {
-      requireAuth: true,
-    })
-
-    if (result.success) {
-      console.log('[IPC] trial start succeeded')
-      // Notify renderer that trial started so it can refresh billing state
-      if (
-        mainWindow &&
-        !mainWindow.isDestroyed() &&
-        !mainWindow.webContents.isDestroyed()
-      ) {
-        mainWindow.webContents.send('trial-started')
-      }
-    } else {
-      console.error('[IPC] trial start failed:', result.error)
-    }
-
-    return result
-  })
-
   // Token refresh handler
   handleIPC('refresh-tokens', async () => {
     try {
@@ -436,11 +413,6 @@ export function registerIPC() {
     return itoHttpClient.get(
       `/auth0/users-by-email?email=${encodeURIComponent(email)}`,
     )
-  })
-
-  // Trial routes proxy
-  handleIPC('trial:complete', async () => {
-    return itoHttpClient.post('/trial/complete')
   })
 
   // Billing routes proxy

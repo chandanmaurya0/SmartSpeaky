@@ -7,7 +7,6 @@ import {
 } from '@mynaui/icons-react'
 import { ItoIcon } from '../icons/ItoIcon'
 import { useMainStore } from '@/app/store/useMainStore'
-import { useOnboardingStore } from '@/app/store/useOnboardingStore'
 import { useAuth } from '@/app/components/auth/useAuth'
 import useBillingState, { ProStatus } from '@/app/hooks/useBillingState'
 import { useEffect, useState, useRef } from 'react'
@@ -21,16 +20,12 @@ import { SubscriptionStatusWidget } from './SubscriptionStatusWidget'
 
 export default function HomeKit() {
   const { navExpanded, currentPage, setCurrentPage } = useMainStore()
-  const { onboardingCompleted } = useOnboardingStore()
-  const { isAuthenticated, user } = useAuth()
+  const { user } = useAuth()
   const billingState = useBillingState()
   const [showText, setShowText] = useState(navExpanded)
-  const hasStartedTrialRef = useRef(false)
   const previousUserIdRef = useRef<string | undefined>(undefined)
 
-  const isPro =
-    billingState.proStatus === ProStatus.ACTIVE_PRO ||
-    billingState.proStatus === ProStatus.FREE_TRIAL
+  const isPro = billingState.proStatus === ProStatus.ACTIVE_PRO
 
   // Reset flags when user changes
   useEffect(() => {
@@ -38,71 +33,13 @@ export default function HomeKit() {
     const previousUserId = previousUserIdRef.current
 
     if (currentUserId && currentUserId !== previousUserId) {
-      // User changed - reset trial start flag
-      hasStartedTrialRef.current = false
+      // User changed
       previousUserIdRef.current = currentUserId
     } else if (currentUserId && previousUserId === undefined) {
       // First time setting userId
       previousUserIdRef.current = currentUserId
     }
   }, [user?.id])
-
-  // Start trial for users who don't have one yet
-  // Case 1: New users after onboarding completes
-  // Case 2: Existing users who completed onboarding but haven't started trial yet
-  useEffect(() => {
-    // Skip if still loading billing state or not authenticated
-    if (billingState.isLoading || !isAuthenticated) return
-
-    // Only proceed if onboarding is completed
-    if (!onboardingCompleted) return
-
-    // Check if user has a trial or subscription
-    const hasTrialOrSubscription =
-      billingState.proStatus === ProStatus.FREE_TRIAL ||
-      billingState.proStatus === ProStatus.ACTIVE_PRO ||
-      isPro
-
-    // Start trial if:
-    // 1. User hasn't started trial yet (tracked by ref)
-    // 2. User doesn't have a trial or subscription
-    // 3. User has completed onboarding
-    if (!hasStartedTrialRef.current && !hasTrialOrSubscription) {
-      hasStartedTrialRef.current = true
-      // Start trial
-      window.api.trial.startAfterOnboarding().catch(err => {
-        console.error('Failed to start trial:', err)
-        // Reset flag so we can retry if needed
-        hasStartedTrialRef.current = false
-      })
-    }
-  }, [
-    onboardingCompleted,
-    isAuthenticated,
-    billingState.isLoading,
-    billingState.proStatus,
-    isPro,
-  ])
-
-  // Listen for trial-started event to refresh billing state
-  useEffect(() => {
-    const offTrialStarted = window.api.on('trial-started', async () => {
-      // Trial started successfully - refresh billing state
-      // BillingModals will handle showing the dialog based on billing state transition
-      await billingState.refresh()
-    })
-
-    return () => {
-      offTrialStarted?.()
-    }
-  }, [billingState])
-
-  // Reset trial start flag when onboarding resets
-  useEffect(() => {
-    if (!onboardingCompleted) {
-      hasStartedTrialRef.current = false
-    }
-  }, [onboardingCompleted])
 
   // Listen for billing deep-link events and finalize subscription
   useEffect(() => {
@@ -113,8 +50,6 @@ export default function HomeKit() {
           if (sessionId) {
             await window.api.billing.confirmSession(sessionId)
           }
-          // Ensure trial is completed locally and on server
-          await window.api.trial.complete()
           // Refresh billing state to update UI (e.g., PRO badge)
           await billingState.refresh()
         } catch (err) {

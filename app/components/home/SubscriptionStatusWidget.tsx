@@ -60,42 +60,6 @@ export function SubscriptionStatusWidget({
     return null
   }
 
-  // Show trial status if user is on free trial
-  if (billingState.proStatus === ProStatus.FREE_TRIAL) {
-    const daysUsed = billingState.trialDays - billingState.daysLeft
-    const trialDays = billingState.trialDays || 1
-    const trialPercentage = Math.min(100, (daysUsed / trialDays) * 100)
-
-    return (
-      <div className={cardClassName}>
-        {/* Header */}
-        <div className="text-sm font-bold">Pro Trial Active</div>
-
-        {/* Progress bar */}
-        <div className={progressBarContainerClassName}>
-          <div
-            className={`${progressBarFillClassName} from-purple-500 to-pink-500`}
-            style={{ width: `${trialPercentage}%` }}
-          />
-        </div>
-
-        {/* Days remaining */}
-        <div className="text-xs">
-          {billingState.daysLeft} day{billingState.daysLeft !== 1 ? 's' : ''}{' '}
-          left on <span className="font-medium">Ito Pro</span>
-        </div>
-
-        {/* Upgrade button */}
-        <button
-          className={`${buttonBaseClassName} bg-gray-900`}
-          onClick={handleUpgradeClick}
-        >
-          Upgrade Now
-        </button>
-      </div>
-    )
-  }
-
   // Show free tier status (Ito Starter)
   const totalWords = FREE_TIER_WORD_LIMIT
   const usagePercentage = Math.min(100, (weeklyWords / totalWords) * 100)

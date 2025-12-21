@@ -3,7 +3,6 @@ import { create } from 'zustand'
 
 export enum ProStatus {
   ACTIVE_PRO = 'active_pro',
-  FREE_TRIAL = 'free_trial',
   NONE = 'none',
 }
 
@@ -12,11 +11,6 @@ export type BillingState = {
   subscriptionStartAt: Date | null
   subscriptionEndAt: Date | null
   isScheduledForCancellation: boolean
-  trialDays: number
-  trialStartAt: Date | null
-  daysLeft: number
-  isTrialActive: boolean
-  hasCompletedTrial: boolean
 }
 
 // Shared state store - all useBillingState instances share this
@@ -59,9 +53,6 @@ export function useBillingState() {
           subscriptionEndAt: cached.subscriptionEndAt
             ? new Date(cached.subscriptionEndAt)
             : null,
-          trialStartAt: cached.trialStartAt
-            ? new Date(cached.trialStartAt)
-            : null,
         })
       }
     } catch {
@@ -94,19 +85,11 @@ export function useBillingState() {
         const subEnd = res?.subscriptionEndAt
           ? new Date(res.subscriptionEndAt)
           : null
-        const trial = res?.trial || {}
         const next: BillingState = {
           proStatus: res.pro_status,
           subscriptionStartAt: subStart,
           subscriptionEndAt: subEnd,
           isScheduledForCancellation: !!res?.isScheduledForCancellation,
-          trialDays: trial.trialDays ?? 14,
-          trialStartAt: trial.trialStartAt
-            ? new Date(trial.trialStartAt)
-            : null,
-          daysLeft: trial.daysLeft ?? 0,
-          isTrialActive: !!trial.isTrialActive,
-          hasCompletedTrial: !!trial.hasCompletedTrial,
         }
         setState(next)
         cacheState(next)
@@ -147,23 +130,6 @@ export function useBillingState() {
     }
   }, [refresh])
 
-  const completeTrial = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const res = await window.api.trial.complete()
-      if (!res?.success) {
-        setError(res?.error || 'Failed to complete trial')
-      } else {
-        await refresh()
-      }
-    } catch (e: any) {
-      setError(e?.message || 'Failed to complete trial')
-    } finally {
-      setLoading(false)
-    }
-  }, [refresh, setLoading, setError])
-
   const api = useMemo(
     () => ({
       isLoading,
@@ -175,16 +141,9 @@ export function useBillingState() {
       subscriptionStartAt: state?.subscriptionStartAt ?? null,
       subscriptionEndAt: state?.subscriptionEndAt ?? null,
       isScheduledForCancellation: state?.isScheduledForCancellation ?? false,
-
-      isTrialActive: !!state?.isTrialActive,
-      daysLeft: state?.daysLeft ?? 0,
-      trialDays: state?.trialDays ?? 14,
-      trialStartAt: state?.trialStartAt ?? null,
-      hasCompletedTrial: !!state?.hasCompletedTrial,
       refresh,
-      completeTrial,
     }),
-    [isLoading, error, state, refresh, completeTrial],
+    [isLoading, error, state, refresh],
   )
 
   return api

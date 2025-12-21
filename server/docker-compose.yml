@@ -18,6 +18,8 @@ services:
         condition: service_completed_successfully
     environment:
       NODE_ENV: development
+      S3_ENDPOINT: http://minio:9000
+      DB_HOST: db
 
   db:
     image: postgres:16

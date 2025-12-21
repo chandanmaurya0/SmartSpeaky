@@ -32,6 +32,12 @@ export const validateAuth0Config = () => {
   )
 
   if (missing.length > 0) {
+    if (import.meta.env.ITO_ENV === 'local') {
+      console.warn(
+        `Missing Auth0 configuration in local env: ${missing.join(', ')}. Auth features will not work.`,
+      )
+      return true
+    }
     throw new Error(`Missing Auth0 configuration: ${missing.join(', ')}`)
   }
 

@@ -6,15 +6,20 @@ export function createValidationInterceptor(): Interceptor {
   const validator = createValidator()
 
   return next => async req => {
-    if (req.method.kind === 'unary') {
-      // Validate unary requests
+    // Unary Request
+    if (!req.stream) {
       try {
-        const result = validator.validate(req.method.input, req.message)
+        const result = validator.validate(req.method.input, req.message as any)
 
         if (result.kind === 'invalid') {
           const errors =
             result.violations
-              ?.map(v => `${v.field?.map(f => f.name).join('.')}: ${v.message}`)
+              .map(v => {
+                const path = v.field
+                  ?.map(f => ('name' in f ? f.name : ''))
+                  .join('.')
+                return `${path}: ${v.message}`
+              })
               .join(', ') || 'Validation failed'
 
           throw new ConnectError(
@@ -28,22 +33,26 @@ export function createValidationInterceptor(): Interceptor {
         }
         console.error('Validation error:', error)
       }
-    } else if (req.method.kind === 'client_streaming') {
-      // Validate streaming requests (like TranscribeStream with AudioChunk)
-      const originalStream = req.message
+      return await next(req)
+    }
 
-      // Create a new async iterator that validates each chunk
-      req.message = (async function* () {
+    // Streaming Request (Client, Server, or BiDi)
+    if (req.stream) {
+      const originalStream = req.message
+      const validatedStream = (async function* () {
         for await (const chunk of originalStream) {
           try {
-            const result = validator.validate(req.method.input, chunk)
+            const result = validator.validate(req.method.input, chunk as any)
 
             if (result.kind === 'invalid') {
               const errors =
                 result.violations
-                  ?.map(
-                    v => `${v.field?.map(f => f.name).join('.')}: ${v.message}`,
-                  )
+                  .map(v => {
+                    const path = v.field
+                      ?.map(f => ('name' in f ? f.name : ''))
+                      .join('.')
+                    return `${path}: ${v.message}`
+                  })
                   .join(', ') || 'Validation failed'
 
               throw new ConnectError(
@@ -58,10 +67,16 @@ export function createValidationInterceptor(): Interceptor {
               throw error
             }
             console.error('Streaming validation error:', error)
-            yield chunk // Continue with unvalidated chunk if validation itself fails
+            yield chunk
           }
         }
       })()
+
+      // Return next with a NEW request object containing the wrapped message
+      return await next({
+        ...req,
+        message: validatedStream,
+      } as any)
     }
 
     return await next(req)
