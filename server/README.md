@@ -247,6 +247,9 @@ Authentication is optional for local development. When enabled:
 # Build and start with Docker Compose
 docker compose up -d
 
+# Build only backend server image
+docker build --platform linux/amd64 -t ito-backend-server .
+
 # Run migrations
 docker compose exec ito-grpc-server bun run db:migrate
 ```
