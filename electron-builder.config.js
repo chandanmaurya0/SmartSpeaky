@@ -64,10 +64,10 @@ module.exports = {
     target: 'default',
     icon: 'resources/build/icon.icns',
     darkModeSupport: true,
-    hardenedRuntime: true,
+    hardenedRuntime: stage === 'prod',
     gatekeeperAssess: false,
-    identity: 'Demox Labs, Inc. (294ZSTM7UB)',
-    notarize: true,
+    identity: stage === 'prod' ? 'Demox Labs, Inc. (294ZSTM7UB)' : '-',
+    notarize: stage === 'prod',
     entitlements: 'build/entitlements.mac.plist',
     entitlementsInherit: 'build/entitlements.mac.inherit.plist',
     extendInfo: {
