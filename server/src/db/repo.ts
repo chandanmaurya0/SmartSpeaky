@@ -290,6 +290,7 @@ export class AdvancedSettingsRepository {
         editing_prompt: llmSettings.editing_prompt,
         no_speech_threshold: llmSettings.no_speech_threshold,
         low_quality_threshold: llmSettings.low_quality_threshold,
+        asr_api_key: llmSettings.asr_api_key,
       },
       created_at: llmSettings.created_at,
       updated_at: llmSettings.updated_at,
@@ -304,9 +305,9 @@ export class AdvancedSettingsRepository {
       `INSERT INTO llm_settings (
          user_id, asr_model, asr_provider, asr_prompt, llm_provider, llm_model, 
          llm_temperature, transcription_prompt, editing_prompt, no_speech_threshold, 
-         low_quality_threshold, updated_at
+         low_quality_threshold, asr_api_key, updated_at
        )
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, current_timestamp)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, current_timestamp)
        ON CONFLICT (user_id)
        DO UPDATE SET
          asr_model = EXCLUDED.asr_model,
@@ -319,6 +320,7 @@ export class AdvancedSettingsRepository {
          editing_prompt = EXCLUDED.editing_prompt,
          no_speech_threshold = EXCLUDED.no_speech_threshold,
          low_quality_threshold = EXCLUDED.low_quality_threshold,
+         asr_api_key = EXCLUDED.asr_api_key,
          updated_at = current_timestamp
        RETURNING *`,
       [
@@ -333,6 +335,7 @@ export class AdvancedSettingsRepository {
         settingsData.llm?.editingPrompt || '',
         settingsData.llm?.noSpeechThreshold || 0.0,
         settingsData.llm?.lowQualityThreshold || 0.0,
+        settingsData.llm?.asrApiKey || '',
       ],
     )
 
@@ -351,6 +354,7 @@ export class AdvancedSettingsRepository {
         editing_prompt: llmSettings.editing_prompt,
         no_speech_threshold: llmSettings.no_speech_threshold,
         low_quality_threshold: llmSettings.low_quality_threshold,
+        asr_api_key: llmSettings.asr_api_key,
       },
       created_at: llmSettings.created_at,
       updated_at: llmSettings.updated_at,

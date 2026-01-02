@@ -226,6 +226,7 @@ export class ItoStreamController {
             asrModel: context.advancedSettings.llm.asrModel ?? undefined,
             asrProvider: context.advancedSettings.llm.asrProvider ?? undefined,
             asrPrompt: context.advancedSettings.llm.asrPrompt ?? undefined,
+            asrApiKey: context.advancedSettings.llm.asrApiKey ?? undefined,
             noSpeechThreshold:
               context.advancedSettings.llm.noSpeechThreshold ?? undefined,
             llmProvider: context.advancedSettings.llm.llmProvider ?? undefined,

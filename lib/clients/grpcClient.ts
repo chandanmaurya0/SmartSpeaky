@@ -176,6 +176,7 @@ class GrpcClient {
         'no-speech-threshold',
         advancedSettings.llm.noSpeechThreshold?.toString() ?? '',
       )
+      headers.set('asr-api-key', advancedSettings.llm.asrApiKey ?? '')
 
       headers.set('mode', mode.toString())
 
@@ -511,6 +512,7 @@ class GrpcClient {
           editingPrompt: settings.llm.editingPrompt ?? undefined,
           llmTemperature: settings.llm.llmTemperature ?? undefined,
           noSpeechThreshold: settings.llm.noSpeechThreshold ?? undefined,
+          asrApiKey: settings.llm.asrApiKey ?? undefined,
         },
       })
       return await this.client.updateAdvancedSettings(request, {

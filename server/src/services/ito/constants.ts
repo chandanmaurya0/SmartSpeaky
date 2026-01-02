@@ -21,4 +21,5 @@ export const DEFAULT_ADVANCED_SETTINGS_STRUCT = {
   transcriptionPrompt: DEFAULT_ADVANCED_SETTINGS.transcriptionPrompt,
   editingPrompt: DEFAULT_ADVANCED_SETTINGS.editingPrompt,
   noSpeechThreshold: DEFAULT_ADVANCED_SETTINGS.noSpeechThreshold,
+  asrApiKey: (DEFAULT_ADVANCED_SETTINGS as any).asrApiKey,
 }

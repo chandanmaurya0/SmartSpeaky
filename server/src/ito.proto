@@ -263,6 +263,7 @@ message LlmSettings {
   optional string editing_prompt = 8;
   optional float no_speech_threshold = 9;
   optional float low_quality_threshold = 10;
+  optional string asr_api_key = 11;
 }
 
 message AdvancedSettings {

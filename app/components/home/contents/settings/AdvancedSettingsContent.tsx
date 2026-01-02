@@ -4,8 +4,6 @@ import {
 } from '@/app/store/useAdvancedSettingsStore'
 import {
   ChangeEvent,
-  useEffect,
-  useRef,
   useState,
   useCallback,
   memo,
@@ -33,17 +31,31 @@ const llmSettingsConfig: LlmSettingConfig[] = [
   {
     name: 'asrProvider',
     label: 'ASR Provider',
-    placeholder: 'Enter ASR provider name',
-    description: '',
+    placeholder: 'Select ASR provider',
+    description: 'Speech-to-text provider for audio transcription',
     maxLength: modelProviderLengthLimit,
-    readOnly: true,
+    isSelect: true,
+    options: ['groq'],
   },
   {
     name: 'asrModel',
     label: 'ASR Model',
-    placeholder: 'Enter ASR model name',
+    placeholder: 'Select ASR model',
     description: 'The ASR model used for speech-to-text transcription',
     maxLength: modelProviderLengthLimit,
+    isSelect: true,
+    options: [
+      'whisper-large-v3',
+      'whisper-large-v3-turbo',
+      'distil-whisper-large-v3-en',
+    ],
+  },
+  {
+    name: 'asrApiKey',
+    label: 'ASR Provider API Key',
+    placeholder: 'Enter your ASR API key',
+    description: 'Provide an API key for the selected ASR provider.',
+    maxLength: 100,
   },
   {
     name: 'asrPrompt',
@@ -66,9 +78,19 @@ const llmSettingsConfig: LlmSettingConfig[] = [
   {
     name: 'llmModel',
     label: 'LLM Model',
-    placeholder: 'Enter LLM model name',
+    placeholder: 'Select LLM model',
     description: 'The LLM model used for text generation tasks',
     maxLength: modelProviderLengthLimit,
+    isSelect: true,
+    options: [
+      'llama-3.3-70b-versatile',
+      'llama-3.1-70b-versatile',
+      'llama-3.1-8b-instant',
+      'mixtral-8x7b-32768',
+      'gemma2-9b-it',
+      'llama3.1-70b',
+      'llama3.1-8b',
+    ],
   },
   {
     name: 'llmTemperature',
@@ -211,7 +233,9 @@ export default function AdvancedSettingsContent() {
     setMacosAccessibilityContextEnabled,
   } = useAdvancedSettingsStore()
   const windowContext = useWindowContext()
-  const debounceRef = useRef<NodeJS.Timeout>(null)
+
+  const [isSaving, setIsSaving] = useState(false)
+  const [savedSuccess, setSavedSuccess] = useState(false)
 
   // Helper to resolve null to actual default value for display
   const getDisplayValue = useCallback(
@@ -225,35 +249,47 @@ export default function AdvancedSettingsContent() {
     [llm, defaults],
   )
 
-  useEffect(() => {
-    return () => {
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current)
+
+  const handleSave = useCallback(async () => {
+    setIsSaving(true)
+    setSavedSuccess(false)
+    
+    // Resolve any null/empty values with defaults before saving
+    // This ensures we persist the actual configuration the user sees
+    const resolvedLlm = { ...llm }
+    if (defaults) {
+      for (const key of Object.keys(resolvedLlm) as Array<keyof LlmSettings>) {
+        const val = resolvedLlm[key]
+        if ((val === null || val === '') && defaults[key] !== undefined && defaults[key] !== null) {
+          // Verify if we should override empty strings. 
+          // For providers and models, yes. For prompts/API keys, maybe not if user intentionally cleared them?
+          // But given current behavior where emptiness causes issues, resolving to default seems safer for main configs.
+          
+          // Special handling: Don't override API key if it's empty (user might want to clear it)
+          if (key === 'asrApiKey' && val === '') {
+            continue
+          }
+          
+          // @ts-ignore
+          resolvedLlm[key] = defaults[key]
+        }
       }
     }
-  }, [])
 
-  const scheduleAdvancedSettingsUpdate = useCallback(
-    (
-      nextLlm: LlmSettings,
-      nextGrammarEnabled: boolean,
-      nextMacosAccessibilityEnabled: boolean,
-    ) => {
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current)
-      }
-
-      debounceRef.current = setTimeout(async () => {
-        const settingsToSave = {
-          llm: nextLlm,
-          grammarServiceEnabled: nextGrammarEnabled,
-          macosAccessibilityContextEnabled: nextMacosAccessibilityEnabled,
-        }
-        await window.api.updateAdvancedSettings(settingsToSave)
-      }, 1000)
-    },
-    [],
-  )
+    const settingsToSave = {
+      llm: resolvedLlm,
+      grammarServiceEnabled,
+      macosAccessibilityContextEnabled,
+    }
+    await window.api.updateAdvancedSettings(settingsToSave)
+    
+    setIsSaving(false)
+    setSavedSuccess(true)
+    setTimeout(() => setSavedSuccess(false), 2000)
+    
+    // Optional: Add a toast notification here
+    console.log('Settings saved:', settingsToSave)
+  }, [llm, defaults, grammarServiceEnabled, macosAccessibilityContextEnabled])
 
   const handleInputChange = useCallback(
     (
@@ -277,53 +313,25 @@ export default function AdvancedSettingsContent() {
         newValue = rawValue
       }
 
-      const updatedLlm = { ...llm, [config.name]: newValue }
       setLlmSettings({ [config.name]: newValue })
-      scheduleAdvancedSettingsUpdate(
-        updatedLlm,
-        grammarServiceEnabled,
-        macosAccessibilityContextEnabled,
-      )
     },
-    [
-      llm,
-      grammarServiceEnabled,
-      macosAccessibilityContextEnabled,
-      setLlmSettings,
-      scheduleAdvancedSettingsUpdate,
-    ],
+    [llm, setLlmSettings],
   )
 
   const handleGrammarServiceToggle = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const enabled = e.target.checked
       setGrammarServiceEnabled(enabled)
-      scheduleAdvancedSettingsUpdate(
-        llm,
-        enabled,
-        macosAccessibilityContextEnabled,
-      )
     },
-    [
-      llm,
-      macosAccessibilityContextEnabled,
-      setGrammarServiceEnabled,
-      scheduleAdvancedSettingsUpdate,
-    ],
+    [setGrammarServiceEnabled],
   )
 
   const handleMacosAccessibilityContextToggle = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const enabled = e.target.checked
       setMacosAccessibilityContextEnabled(enabled)
-      scheduleAdvancedSettingsUpdate(llm, grammarServiceEnabled, enabled)
     },
-    [
-      llm,
-      grammarServiceEnabled,
-      setMacosAccessibilityContextEnabled,
-      scheduleAdvancedSettingsUpdate,
-    ],
+    [setMacosAccessibilityContextEnabled],
   )
 
   const handleRestoreDefaults = useCallback(() => {
@@ -337,19 +345,10 @@ export default function AdvancedSettingsContent() {
       transcriptionPrompt: null,
       editingPrompt: null,
       noSpeechThreshold: null,
+      asrApiKey: null,
     }
     setLlmSettings(defaultLlmSettings)
-    scheduleAdvancedSettingsUpdate(
-      defaultLlmSettings,
-      grammarServiceEnabled,
-      macosAccessibilityContextEnabled,
-    )
-  }, [
-    grammarServiceEnabled,
-    macosAccessibilityContextEnabled,
-    setLlmSettings,
-    scheduleAdvancedSettingsUpdate,
-  ])
+  }, [setLlmSettings])
 
   return (
     <div className="max-h-[70vh] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-500 scrollbar-track-transparent">
@@ -423,6 +422,22 @@ export default function AdvancedSettingsContent() {
             </label>
           </div>
         )}
+      </div>
+
+      <div className="mt-8 flex justify-center pb-6">
+        <button
+          onClick={handleSave}
+          disabled={isSaving || savedSuccess}
+          className={`w-1/2 py-2 text-sm font-medium text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200
+            ${savedSuccess 
+              ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500' 
+              : 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500'
+            }
+            ${isSaving ? 'opacity-75 cursor-wait' : ''}
+          `}
+        >
+          {isSaving ? 'Saving...' : savedSuccess ? 'Saved!' : 'Save Changes'}
+        </button>
       </div>
     </div>
   )

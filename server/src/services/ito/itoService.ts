@@ -117,6 +117,7 @@ function dbToAdvancedSettingsPb(
         dbAdvancedSettings.llm.no_speech_threshold ?? undefined,
       lowQualityThreshold:
         dbAdvancedSettings.llm.low_quality_threshold ?? undefined,
+      asrApiKey: dbAdvancedSettings.llm.asr_api_key ?? undefined,
     }),
     default: DEFAULT_ADVANCED_SETTINGS_STRUCT,
   })

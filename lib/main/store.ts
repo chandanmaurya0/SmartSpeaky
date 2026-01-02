@@ -158,6 +158,7 @@ export const defaultValues: AppStore = {
       transcriptionPrompt: null,
       editingPrompt: null,
       noSpeechThreshold: null,
+      asrApiKey: null,
     },
   },
   openMic: false,

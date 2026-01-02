@@ -1,7 +1,6 @@
 import { ElectronAPI } from '@electron-toolkit/preload'
 import type api from './api'
 
-
 interface KeyEvent {
   type: 'keydown' | 'keyup'
   key: string

@@ -22,7 +22,6 @@ export default function HomeKit() {
   const [showText, setShowText] = useState(navExpanded)
   const previousUserIdRef = useRef<string | undefined>(undefined)
 
-
   // Reset flags when user changes
   useEffect(() => {
     const currentUserId = user?.id
@@ -36,7 +35,6 @@ export default function HomeKit() {
       previousUserIdRef.current = currentUserId
     }
   }, [user?.id])
-
 
   // Handle text and positioning animation timing
   useEffect(() => {
@@ -130,7 +128,6 @@ export default function HomeKit() {
             />
           </div>
         </div>
-
       </div>
 
       {/* Main Content */}

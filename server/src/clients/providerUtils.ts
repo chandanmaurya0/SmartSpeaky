@@ -1,21 +1,39 @@
 import { LlmProvider } from './llmProvider.js'
 import { ClientProvider } from './providers.js'
-import { groqClient } from './groqClient.js'
+import { groqClient, GroqClient } from './groqClient.js'
 import { cerebrasClient } from './cerebrasClient.js'
 import { ClientUnavailableError } from './errors.js'
 
 /**
  * Get an ASR provider by name
  * @param providerName The name of the ASR provider
+ * @param apiKey Optional API key to use instead of environment variable
  * @returns The ASR provider instance
  */
-export function getAsrProvider(providerName: string): LlmProvider {
+export function getAsrProvider(providerName: string, apiKey?: string): LlmProvider {
   switch (providerName) {
     case ClientProvider.GROQ:
-      if (!groqClient.isAvailable) {
+      // Use provided API key or fall back to environment variable
+      // Treat empty strings as undefined to properly fall back
+      const userProvidedKey = apiKey && apiKey.trim() !== '' ? apiKey : undefined
+      const envKey = process.env.GROQ_API_KEY && process.env.GROQ_API_KEY.trim() !== '' 
+        ? process.env.GROQ_API_KEY 
+        : undefined
+      const groqApiKey = userProvidedKey || envKey
+      
+      console.log('ASR Provider API Key Debug:', {
+        userProvidedKey: userProvidedKey ? `${userProvidedKey.substring(0, 10)}...` : 'none',
+        envKey: envKey ? `${envKey.substring(0, 10)}...` : 'none',
+        finalKey: groqApiKey ? `${groqApiKey.substring(0, 10)}...` : 'none',
+      })
+      
+      if (!groqApiKey) {
+        console.error('No valid API key found for Groq provider. Please provide an API key in settings or set GROQ_API_KEY environment variable.')
         throw new ClientUnavailableError(ClientProvider.GROQ)
       }
-      return groqClient
+      
+      // Create a new client instance with the provided API key
+      return GroqClient.createInstance(groqApiKey)
 
     default:
       throw new ClientUnavailableError(providerName as ClientProvider)

@@ -8,6 +8,7 @@ const DEFAULT_ADVANCED_SETTINGS = {
   asrProvider: 'groq',
   asrModel: 'whisper-large-v3',
   asrPrompt: '',
+  asrApiKey: '',
 
   // LLM (Large Language Model) settings
   llmProvider: 'groq',

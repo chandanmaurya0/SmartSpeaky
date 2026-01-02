@@ -43,6 +43,7 @@ interface LlmSettingsBase {
   editing_prompt: string | null
   no_speech_threshold: number | null
   low_quality_threshold: number | null
+  asr_api_key: string | null
 }
 
 export interface LlmSettings extends LlmSettingsBase {

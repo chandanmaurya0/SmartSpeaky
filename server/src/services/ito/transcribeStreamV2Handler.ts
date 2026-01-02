@@ -122,6 +122,7 @@ export class TranscribeStreamV2Handler {
         mergedConfig,
         asrConfig.asrModel,
         asrConfig.asrProvider,
+        asrConfig.asrApiKey,
         asrConfig.noSpeechThreshold,
       )
 
@@ -327,7 +328,7 @@ export class TranscribeStreamV2Handler {
   }
 
   private extractAsrConfig(mergedConfig: StreamConfig) {
-    return {
+    const config = {
       asrModel: this.resolveOrDefault(
         mergedConfig.llmSettings?.asrModel,
         DEFAULT_ADVANCED_SETTINGS.asrModel,
@@ -336,12 +337,24 @@ export class TranscribeStreamV2Handler {
         mergedConfig.llmSettings?.asrProvider,
         DEFAULT_ADVANCED_SETTINGS.asrProvider,
       ),
-      noSpeechThreshold: this.resolveOrDefault(
-        mergedConfig.llmSettings?.noSpeechThreshold,
-        DEFAULT_ADVANCED_SETTINGS.noSpeechThreshold,
+      asrApiKey: this.resolveOrDefault(
+        mergedConfig.llmSettings?.asrApiKey,
+        (DEFAULT_ADVANCED_SETTINGS as any).asrApiKey || '',
       ),
+      noSpeechThreshold: 
+        mergedConfig.llmSettings?.noSpeechThreshold || 
+        DEFAULT_ADVANCED_SETTINGS.noSpeechThreshold,
       vocabulary: mergedConfig.vocabulary,
     }
+    
+    console.log('Extracted ASR Config:', {
+      asrModel: config.asrModel,
+      asrProvider: config.asrProvider,
+      asrApiKey: config.asrApiKey ? `${config.asrApiKey.substring(0, 10)}...` : 'empty',
+      noSpeechThreshold: config.noSpeechThreshold,
+    })
+    
+    return config
   }
 
   /**
@@ -362,6 +375,7 @@ export class TranscribeStreamV2Handler {
     mergedConfig: StreamConfig,
     asrModel: string,
     asrProvider: string,
+    asrApiKey: string,
     noSpeechThreshold: number,
   ) {
     return {
@@ -372,6 +386,10 @@ export class TranscribeStreamV2Handler {
       asrProvider: this.resolveOrDefault(
         asrProvider,
         DEFAULT_ADVANCED_SETTINGS.asrProvider,
+      ),
+      asrApiKey: this.resolveOrDefault(
+        asrApiKey,
+        (DEFAULT_ADVANCED_SETTINGS as any).asrApiKey || '',
       ),
       asrPrompt: this.resolveOrDefault(
         mergedConfig.llmSettings?.asrPrompt,
@@ -416,7 +434,7 @@ export class TranscribeStreamV2Handler {
       throw new ConnectError('Stream cancelled by client', Code.Canceled)
     }
 
-    const asrClient = getAsrProvider(asrConfig.asrProvider)
+    const asrClient = getAsrProvider(asrConfig.asrProvider, asrConfig.asrApiKey)
     const transcript = await asrClient.transcribeAudio(audioWav, {
       fileType: 'wav',
       asrModel: asrConfig.asrModel,

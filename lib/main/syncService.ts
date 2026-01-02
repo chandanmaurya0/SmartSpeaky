@@ -300,6 +300,7 @@ export class SyncService {
               remoteSettings.llm?.transcriptionPrompt ?? null,
             editingPrompt: remoteSettings.llm?.editingPrompt ?? null,
             noSpeechThreshold: remoteSettings.llm?.noSpeechThreshold ?? null,
+            asrApiKey: remoteSettings.llm?.asrApiKey ?? null,
           },
           // Preserve local-only settings that aren't synced to the server
           grammarServiceEnabled:
