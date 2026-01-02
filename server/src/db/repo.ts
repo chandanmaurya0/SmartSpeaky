@@ -5,8 +5,6 @@ import {
   DictionaryItem,
   LlmSettings,
   AdvancedSettings,
-
-  UserSubscription,
 } from './models.js'
 import {
   CreateNoteRequest,
@@ -406,62 +404,4 @@ export class IpLinkRepository {
 
 
 
-export class SubscriptionsRepository {
-  static async getByUserId(
-    userId: string,
-  ): Promise<UserSubscription | undefined> {
-    const res = await pool.query<UserSubscription>(
-      'SELECT * FROM user_subscriptions WHERE user_id = $1',
-      [userId],
-    )
-    return res.rows[0]
-  }
 
-  static async upsertActive(
-    userId: string,
-    stripeCustomerId: string | null,
-    stripeSubscriptionId: string | null,
-    startAt: Date | null,
-    endAt?: Date | null,
-  ): Promise<UserSubscription> {
-    const res = await pool.query<UserSubscription>(
-      `INSERT INTO user_subscriptions (
-         user_id, stripe_customer_id, stripe_subscription_id, subscription_start_at, subscription_end_at, updated_at
-       ) VALUES ($1, $2, $3, $4, $5, current_timestamp)
-       ON CONFLICT (user_id)
-       DO UPDATE SET
-         stripe_customer_id = EXCLUDED.stripe_customer_id,
-         stripe_subscription_id = EXCLUDED.stripe_subscription_id,
-         subscription_start_at = EXCLUDED.subscription_start_at,
-         subscription_end_at = EXCLUDED.subscription_end_at,
-         updated_at = current_timestamp
-       RETURNING *`,
-      [userId, stripeCustomerId, stripeSubscriptionId, startAt, endAt ?? null],
-    )
-    return res.rows[0]
-  }
-
-  static async updateSubscriptionEndAt(
-    userId: string,
-    endAt: Date | null,
-  ): Promise<UserSubscription> {
-    const res = await pool.query<UserSubscription>(
-      `UPDATE user_subscriptions
-       SET subscription_end_at = $2, updated_at = current_timestamp
-       WHERE user_id = $1
-       RETURNING *`,
-      [userId, endAt],
-    )
-    return res.rows[0]
-  }
-
-  static async deleteByStripeSubscriptionId(
-    stripeSubscriptionId: string,
-  ): Promise<boolean> {
-    const res = await pool.query(
-      'DELETE FROM user_subscriptions WHERE stripe_subscription_id = $1',
-      [stripeSubscriptionId],
-    )
-    return (res.rowCount ?? 0) > 0
-  }
-}

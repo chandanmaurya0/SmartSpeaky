@@ -62,12 +62,4 @@ export interface AdvancedSettings {
 
 
 
-export interface UserSubscription {
-  user_id: string
-  stripe_customer_id: string | null
-  stripe_subscription_id: string | null
-  subscription_start_at: Date | null
-  subscription_end_at: Date | null
-  created_at: Date
-  updated_at: Date
-}
+
