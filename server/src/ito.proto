@@ -264,6 +264,7 @@ message LlmSettings {
   optional float no_speech_threshold = 9;
   optional float low_quality_threshold = 10;
   optional string asr_api_key = 11;
+  optional string llm_api_key = 12;
 }
 
 message AdvancedSettings {

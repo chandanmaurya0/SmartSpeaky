@@ -44,6 +44,7 @@ interface LlmSettingsBase {
   no_speech_threshold: number | null
   low_quality_threshold: number | null
   asr_api_key: string | null
+  llm_api_key: string | null
 }
 
 export interface LlmSettings extends LlmSettingsBase {
@@ -60,7 +61,3 @@ export interface AdvancedSettings {
   created_at: Date
   updated_at: Date
 }
-
-
-
-

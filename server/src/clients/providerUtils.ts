@@ -1,7 +1,7 @@
 import { LlmProvider } from './llmProvider.js'
 import { ClientProvider } from './providers.js'
 import { groqClient, GroqClient } from './groqClient.js'
-import { cerebrasClient } from './cerebrasClient.js'
+import { cerebrasClient, CerebrasClient } from './cerebrasClient.js'
 import { ClientUnavailableError } from './errors.js'
 
 /**
@@ -10,30 +10,71 @@ import { ClientUnavailableError } from './errors.js'
  * @param apiKey Optional API key to use instead of environment variable
  * @returns The ASR provider instance
  */
-export function getAsrProvider(providerName: string, apiKey?: string): LlmProvider {
+export function getAsrProvider(
+  providerName: string,
+  apiKey?: string,
+): LlmProvider {
   switch (providerName) {
     case ClientProvider.GROQ:
       // Use provided API key or fall back to environment variable
       // Treat empty strings as undefined to properly fall back
-      const userProvidedKey = apiKey && apiKey.trim() !== '' ? apiKey : undefined
-      const envKey = process.env.GROQ_API_KEY && process.env.GROQ_API_KEY.trim() !== '' 
-        ? process.env.GROQ_API_KEY 
-        : undefined
+      const userProvidedKey =
+        apiKey && apiKey.trim() !== '' ? apiKey : undefined
+      const envKey =
+        process.env.GROQ_API_KEY && process.env.GROQ_API_KEY.trim() !== ''
+          ? process.env.GROQ_API_KEY
+          : undefined
       const groqApiKey = userProvidedKey || envKey
-      
+
       console.log('ASR Provider API Key Debug:', {
-        userProvidedKey: userProvidedKey ? `${userProvidedKey.substring(0, 10)}...` : 'none',
+        userProvidedKey: userProvidedKey
+          ? `${userProvidedKey.substring(0, 10)}...`
+          : 'none',
         envKey: envKey ? `${envKey.substring(0, 10)}...` : 'none',
         finalKey: groqApiKey ? `${groqApiKey.substring(0, 10)}...` : 'none',
       })
-      
+
       if (!groqApiKey) {
-        console.error('No valid API key found for Groq provider. Please provide an API key in settings or set GROQ_API_KEY environment variable.')
+        console.error(
+          'No valid API key found for Groq provider. Please provide an API key in settings or set GROQ_API_KEY environment variable.',
+        )
         throw new ClientUnavailableError(ClientProvider.GROQ)
       }
-      
+
       // Create a new client instance with the provided API key
       return GroqClient.createInstance(groqApiKey)
+
+    case ClientProvider.CEREBRAS:
+      // Use provided API key or fall back to environment variable
+      const cerebrasUserKey =
+        apiKey && apiKey.trim() !== '' ? apiKey : undefined
+      const cerebrasEnvKey =
+        process.env.CEREBRAS_API_KEY &&
+        process.env.CEREBRAS_API_KEY.trim() !== ''
+          ? process.env.CEREBRAS_API_KEY
+          : undefined
+      const cerebrasApiKey = cerebrasUserKey || cerebrasEnvKey
+
+      console.log('ASR Provider (Cerebras) API Key Debug:', {
+        userProvidedKey: cerebrasUserKey
+          ? `${cerebrasUserKey.substring(0, 10)}...`
+          : 'none',
+        envKey: cerebrasEnvKey
+          ? `${cerebrasEnvKey.substring(0, 10)}...`
+          : 'none',
+        finalKey: cerebrasApiKey
+          ? `${cerebrasApiKey.substring(0, 10)}...`
+          : 'none',
+      })
+
+      if (!cerebrasApiKey) {
+        console.error(
+          'No valid API key found for Cerebras provider. Please provide an API key in settings or set CEREBRAS_API_KEY environment variable.',
+        )
+        throw new ClientUnavailableError(ClientProvider.CEREBRAS)
+      }
+
+      return CerebrasClient.createInstance(cerebrasApiKey)
 
     default:
       throw new ClientUnavailableError(providerName as ClientProvider)
@@ -45,19 +86,61 @@ export function getAsrProvider(providerName: string, apiKey?: string): LlmProvid
  * @param providerName The name of the LLM provider
  * @returns The LLM provider instance
  */
-export function getLlmProvider(providerName: string): LlmProvider {
+export function getLlmProvider(
+  providerName: string,
+  apiKey?: string,
+): LlmProvider {
   switch (providerName) {
     case ClientProvider.GROQ:
-      if (!groqClient.isAvailable) {
+      // Use provided API key or fall back to environment variable
+      const userProvidedKey =
+        apiKey && apiKey.trim() !== '' ? apiKey : undefined
+      const envKey =
+        process.env.GROQ_API_KEY && process.env.GROQ_API_KEY.trim() !== ''
+          ? process.env.GROQ_API_KEY
+          : undefined
+      const groqApiKey = userProvidedKey || envKey
+
+      console.log('LLM Provider (Groq) API Key Debug:', {
+        userProvidedKey: userProvidedKey
+          ? `${userProvidedKey.substring(0, 10)}...`
+          : 'none',
+        envKey: envKey ? `${envKey.substring(0, 10)}...` : 'none',
+        finalKey: groqApiKey ? `${groqApiKey.substring(0, 10)}...` : 'none',
+      })
+
+      if (!groqApiKey) {
         throw new ClientUnavailableError(ClientProvider.GROQ)
       }
-      return groqClient
+      return GroqClient.createInstance(groqApiKey)
 
     case ClientProvider.CEREBRAS:
-      if (!cerebrasClient || !cerebrasClient.isAvailable) {
+      // Use provided API key or fall back to environment variable
+      const cerebrasUserKey =
+        apiKey && apiKey.trim() !== '' ? apiKey : undefined
+      const cerebrasEnvKey =
+        process.env.CEREBRAS_API_KEY &&
+        process.env.CEREBRAS_API_KEY.trim() !== ''
+          ? process.env.CEREBRAS_API_KEY
+          : undefined
+      const cerebrasApiKey = cerebrasUserKey || cerebrasEnvKey
+
+      console.log('LLM Provider (Cerebras) API Key Debug:', {
+        userProvidedKey: cerebrasUserKey
+          ? `${cerebrasUserKey.substring(0, 10)}...`
+          : 'none',
+        envKey: cerebrasEnvKey
+          ? `${cerebrasEnvKey.substring(0, 10)}...`
+          : 'none',
+        finalKey: cerebrasApiKey
+          ? `${cerebrasApiKey.substring(0, 10)}...`
+          : 'none',
+      })
+
+      if (!cerebrasApiKey) {
         throw new ClientUnavailableError(ClientProvider.CEREBRAS)
       }
-      return cerebrasClient
+      return CerebrasClient.createInstance(cerebrasApiKey)
 
     default:
       throw new ClientUnavailableError(providerName as ClientProvider)

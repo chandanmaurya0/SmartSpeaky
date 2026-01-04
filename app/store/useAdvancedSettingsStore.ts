@@ -12,6 +12,7 @@ export interface LlmSettings {
   editingPrompt: string | null
   noSpeechThreshold: number | null
   asrApiKey: string | null
+  llmApiKey: string | null
 }
 
 interface AdvancedSettingsState {
