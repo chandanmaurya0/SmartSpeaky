@@ -82,7 +82,7 @@ export default function AboutContent() {
               <span className={`text-lg font-bold ml-2`}>VibeType</span>
             </div>
             <h2 className="text-lg font-semibold mb-4">
-              Version {import.meta.env.VITE_ITO_VERSION}
+              Version {import.meta.env.VITE_VIBETYPE_VERSION}
             </h2>
             <p className="text-gray-500 mb-6 leading-relaxed">
               Made with 🩷 in India.

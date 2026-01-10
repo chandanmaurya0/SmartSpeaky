@@ -7,7 +7,7 @@ interface ImportMetaEnv {
   readonly VITE_POSTHOG_HOST: string
   readonly VITE_UPDATER_BUCKET: string
   readonly VITE_LOCAL_SERVER_PORT?: string
-  readonly VITE_ITO_VERSION: string
+  readonly VITE_VIBETYPE_VERSION: string
 }
 
 interface ImportMeta {

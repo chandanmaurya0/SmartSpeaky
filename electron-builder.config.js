@@ -54,7 +54,7 @@ module.exports = {
   asar: true,
   asarUnpack: ['resources/**'],
   extraMetadata: {
-    version: process.env.VITE_ITO_VERSION || '0.0.0-dev',
+    version: process.env.VITE_VIBETYPE_VERSION || '0.0.0-dev',
   },
   protocols: {
     name: 'ito',
