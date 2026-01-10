@@ -13,9 +13,7 @@ import CheckEmailContent from './CheckEmailContent'
 import ItoIcon from '../../icons/ItoIcon'
 import UserCog from '@/app/assets/icons/UserCog.svg'
 import GoogleIcon from '../../icons/GoogleIcon'
-import AppleIcon from '../../icons/AppleIcon'
 import GitHubIcon from '../../icons/GitHubIcon'
-import MicrosoftIcon from '../../icons/MicrosoftIcon'
 import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '../../auth/useAuth'
 import { checkLocalServerHealth } from '@/app/utils/healthCheck'
@@ -43,8 +41,6 @@ export default function CreateAccountContent() {
     user,
     isAuthenticated,
     loginWithGoogle,
-    loginWithMicrosoft,
-    loginWithApple,
     loginWithGitHub,
     loginWithSelfHosted,
     signupWithEmail,
@@ -113,12 +109,14 @@ export default function CreateAccountContent() {
         case 'google':
           await loginWithGoogle()
           break
+        /*
         case 'microsoft':
           await loginWithMicrosoft()
           break
         case 'apple':
           await loginWithApple()
           break
+        */
         case 'github':
           await loginWithGitHub()
           break
@@ -224,30 +222,6 @@ export default function CreateAccountContent() {
               <GoogleIcon className="size-5" />
               <div className="w-full text-sm font-medium">
                 Continue with Google
-              </div>
-            </Button>
-
-            <Button
-              variant="outline"
-              className="w-full h-12 flex items-center justify-start gap-3 text-sm font-medium"
-              onClick={() => handleSocialAuth('microsoft')}
-            >
-              <MicrosoftIcon className="size-5" />
-              <div className="w-full text-sm font-medium">
-                Continue with Microsoft
-              </div>
-            </Button>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <Button
-              variant="outline"
-              className="h-12 flex items-center justify-start gap-2 text-sm font-medium"
-              onClick={() => handleSocialAuth('apple')}
-            >
-              <AppleIcon className="size-5" />
-              <div className="w-full text-sm font-medium">
-                Continue with Apple
               </div>
             </Button>
 

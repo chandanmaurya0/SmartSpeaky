@@ -20,14 +20,10 @@ import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
 
 const ASR_PROVIDERS = [
-  { label: 'OpenAI Whisper', value: 'openai' },
-  { label: 'Deepgram', value: 'deepgram' },
   { label: 'Groq', value: 'groq' },
 ]
 
 const LLM_PROVIDERS = [
-  { label: 'OpenAI', value: 'openai' },
-  { label: 'Anthropic', value: 'anthropic' },
   { label: 'Groq', value: 'groq' },
 ]
 
@@ -140,7 +136,7 @@ export default function SetLLMToken() {
                 <div className="grid grid-cols-1 gap-4 pl-10">
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-muted-foreground">
-                      Provider
+                      Select Provider
                     </label>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -197,13 +193,13 @@ export default function SetLLMToken() {
                   <div className="w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center text-purple-600">
                     <Cpu size={18} />
                   </div>
-                  <h3 className="font-medium text-lg">Connect VibeType</h3>
+                  <h3 className="font-medium text-lg">LLM Configuration</h3>
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 pl-10">
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-muted-foreground">
-                      Provider
+                      Select Provider
                     </label>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
