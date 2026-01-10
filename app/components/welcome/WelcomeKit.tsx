@@ -1,6 +1,6 @@
 import CreateAccountContent from './contents/CreateAccountContent'
 import SignInContent from './contents/SignInContent'
-import ReferralContent from './contents/ReferralContent'
+import ReferralContent from './contents/SetLLMToken'
 import DataControlContent from './contents/DataControlContent'
 import PermissionsContent from './contents/PermissionsContent'
 import MicrophoneTestContent from './contents/MicrophoneTestContent'
@@ -21,7 +21,6 @@ export default function WelcomeKit() {
 
   const onboardingStepOrder = [
     CreateAccountContent,
-    ReferralContent,
     DataControlContent,
     PermissionsContent,
     MicrophoneTestContent,
@@ -29,6 +28,7 @@ export default function WelcomeKit() {
     GoodToGoContent,
     IntroducingIntelligentModeContent,
     AnyAppContent,
+    ReferralContent,
     TryItOutContent,
   ]
 

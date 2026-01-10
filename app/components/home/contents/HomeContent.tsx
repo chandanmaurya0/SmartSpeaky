@@ -207,7 +207,7 @@ export default function HomeContent() {
         return {
           text: 'Audio is silent',
           isError: true,
-          tooltip: "Ito didn't detect any words so the transcript is empty",
+          tooltip: "VibeType didn't detect any words so the transcript is empty",
         }
       }
       return {
@@ -224,7 +224,7 @@ export default function HomeContent() {
       return {
         text: 'Audio is silent.',
         isError: true,
-        tooltip: "Ito didn't detect any words so the transcript is empty",
+        tooltip: "VibeType didn't detect any words so the transcript is empty",
       }
     }
 
@@ -371,7 +371,7 @@ export default function HomeContent() {
         .replace(/[-:]/g, '')
         .replace('T', '_')
         .slice(0, 15)
-      const filename = `ito-recording-${timestamp}.wav`
+      const filename = `vibetype-recording-${timestamp}.wav`
 
       // Create temporary link and trigger download
       const link = document.createElement('a')
@@ -560,11 +560,10 @@ export default function HomeContent() {
                             >
                               <TooltipTrigger asChild>
                                 <button
-                                  className={`p-1.5 hover:bg-gray-200 rounded transition-colors cursor-pointer ${
-                                    copiedItems.has(interaction.id)
+                                  className={`p-1.5 hover:bg-gray-200 rounded transition-colors cursor-pointer ${copiedItems.has(interaction.id)
                                       ? 'text-green-600'
                                       : 'text-gray-600'
-                                  }`}
+                                    }`}
                                   onClick={() =>
                                     copyToClipboard(
                                       displayInfo.text,
@@ -626,11 +625,10 @@ export default function HomeContent() {
                           >
                             <TooltipTrigger asChild>
                               <button
-                                className={`p-1.5 hover:bg-gray-200 rounded transition-colors cursor-pointer ${
-                                  playingAudio === interaction.id
+                                className={`p-1.5 hover:bg-gray-200 rounded transition-colors cursor-pointer ${playingAudio === interaction.id
                                     ? 'bg-blue-50 text-blue-600'
                                     : 'text-gray-600'
-                                }`}
+                                  }`}
                                 onClick={() => handleAudioPlayStop(interaction)}
                                 disabled={!interaction.raw_audio}
                               >

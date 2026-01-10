@@ -418,7 +418,7 @@ export default function AdvancedSettingsContent() {
                 Enable Grammar Service
               </span>
               <span className="block text-xs text-slate-500 mt-1">
-                Apply Ito's local grammar adjustments before inserting text.
+                Apply VibeType's local grammar adjustments before inserting text.
               </span>
             </span>
           </label>

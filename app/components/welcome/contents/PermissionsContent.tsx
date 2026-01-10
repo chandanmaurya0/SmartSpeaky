@@ -152,7 +152,7 @@ export default function PermissionsContent() {
             <h1 className="text-3xl mb-4 mt-12 pr-24">
               {isAccessibilityEnabled && isMicrophoneEnabled
                 ? 'Thank you for trusting us. We take your privacy seriously.'
-                : 'Set up Ito on your computer'}
+                : 'Set up VibeType on your computer'}
             </h1>
             <div className="flex flex-col gap-4 my-8 pr-24">
               <div className="border rounded-lg p-4 flex flex-col gap-2 bg-background border-border border-2">
@@ -164,14 +164,14 @@ export default function PermissionsContent() {
                   )}
                   <div className="font-medium text-base flex">
                     {isAccessibilityEnabled
-                      ? 'Ito can insert and edit text.'
-                      : 'Allow Ito to insert spoken words.'}
+                      ? 'VibeType can insert and edit text.'
+                      : 'Allow VibeType to insert spoken words.'}
                   </div>
                 </div>
                 {!isAccessibilityEnabled && (
                   <>
                     <div className="text-sm text-muted-foreground mb-2">
-                      This lets Ito put your spoken words in the right textbox
+                      This lets VibeType put your spoken words in the right textbox
                       and edit text according to your commands
                     </div>
                     <div className="flex items-center justify-between">
@@ -191,7 +191,7 @@ export default function PermissionsContent() {
                           </TooltipTrigger>
                           <TooltipContent side="right" align="start">
                             <p>
-                              Ito uses this to gather context based on the
+                              VibeType uses this to gather context based on the
                               application you&apos;re using, <br /> and to
                               access your clipboard temporarily to paste text.
                             </p>
@@ -216,14 +216,14 @@ export default function PermissionsContent() {
                   )}
                   <div className="font-medium text-base flex">
                     {isMicrophoneEnabled
-                      ? 'Ito can use your microphone.'
-                      : 'Allow Ito to use your microphone.'}
+                      ? 'VibeType can use your microphone.'
+                      : 'Allow VibeType to use your microphone.'}
                   </div>
                 </div>
                 {isAccessibilityEnabled && !isMicrophoneEnabled && (
                   <>
                     <div className="text-sm text-muted-foreground mb-2">
-                      This lets Ito hear your voice and transcribe your speech
+                      This lets VibeType hear your voice and transcribe your speech
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 mt-1">
@@ -242,7 +242,7 @@ export default function PermissionsContent() {
                           </TooltipTrigger>
                           <TooltipContent side="right" align="start">
                             <p>
-                              Ito will show an animation when the mic is active{' '}
+                              VibeType will show an animation when the mic is active{' '}
                               <br /> and only listen when you activate it
                             </p>
                           </TooltipContent>

@@ -38,11 +38,11 @@ export default function TryItOut() {
           </div>
           <div className="flex items-center gap-2 px-4 mt-24">
             <div className="w-10 h-10 rounded-md bg-yellow-200 flex items-center justify-center text-lg font-bold">
-              B
+              C
             </div>
             <div>
-              <div className="font-medium">Jordan</div>
-              <div className="text-sm">Hey Taylor, is Ito working for you?</div>
+              <div className="font-medium">Chandan</div>
+              <div className="text-sm">Hey Chandan, is VibeType working for you?</div>
             </div>
           </div>
           <div className="flex items-center gap-2 px-4 pb-4 rounded-b-2xl">
@@ -208,7 +208,7 @@ export default function TryItOut() {
               &lt; Back
             </button>
             <h1 className="text-3xl mb-4 mt-12">
-              Use Ito with the keyboard shortcut.
+              Use VibeType with the keyboard shortcut.
             </h1>
             <p className="text-base text-muted-foreground mt-6">
               Hold down on the{' '}

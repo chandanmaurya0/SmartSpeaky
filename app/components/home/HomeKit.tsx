@@ -48,7 +48,7 @@ export default function HomeKit() {
       // When collapsing: hide text immediately, then center icons after slide completes
       setShowText(false)
       // Return no-op function
-      return () => {}
+      return () => { }
     }
   }, [navExpanded])
 
@@ -86,7 +86,7 @@ export default function HomeKit() {
             <span
               className={`text-2xl font-bold transition-opacity duration-100 ${showText ? 'opacity-100' : 'opacity-0'} ${showText ? 'ml-2' : 'w-0 overflow-hidden'}`}
             >
-              ito
+              VibeType
             </span>
           </div>
           {/* Nav */}
