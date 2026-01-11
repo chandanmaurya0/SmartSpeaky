@@ -30,9 +30,12 @@ export const registerAuth0Routes = async (fastify: FastifyInstance) => {
     )
   }
 
-  const getManagementToken = async (): Promise<string | null> => {
-    if (!AUTH0_DOMAIN || !AUTH0_MGMT_CLIENT_ID || !AUTH0_MGMT_CLIENT_SECRET)
-      return null
+  const getManagementToken = async (): Promise<string> => {
+    if (!AUTH0_DOMAIN || !AUTH0_MGMT_CLIENT_ID || !AUTH0_MGMT_CLIENT_SECRET) {
+      throw new Error(
+        `Missing Auth0 env vars: Domain=${!!AUTH0_DOMAIN}, ClientID=${!!AUTH0_MGMT_CLIENT_ID}, Secret=${!!AUTH0_MGMT_CLIENT_SECRET}`,
+      )
+    }
     try {
       const tokenUrl = `https://${AUTH0_DOMAIN}/oauth/token`
       const res = await fetch(tokenUrl, {
@@ -48,13 +51,13 @@ export const registerAuth0Routes = async (fastify: FastifyInstance) => {
       const data: any = await res.json()
       if (!res.ok || !data?.access_token) {
         throw new Error(
-          data?.error_description || 'Failed to get management token',
+          data?.error_description ||
+            `Auth0 Token Error: ${res.status} ${JSON.stringify(data)}`,
         )
       }
       return data.access_token as string
-    } catch (err) {
-      fastify.log.error({ err }, '[Auth0] getManagementToken error')
-      return null
+    } catch (err: any) {
+      throw new Error(`getManagementToken failed: ${err.message}`)
     }
   }
 
@@ -69,11 +72,11 @@ export const registerAuth0Routes = async (fastify: FastifyInstance) => {
       return
     }
 
-    const token = await getManagementToken()
-    if (!token) {
-      reply
-        .status(500)
-        .send({ success: false, error: 'Missing management token' })
+    let token: string
+    try {
+      token = await getManagementToken()
+    } catch (err: any) {
+      reply.status(500).send({ success: false, error: err.message })
       return
     }
 
@@ -121,11 +124,11 @@ export const registerAuth0Routes = async (fastify: FastifyInstance) => {
       return
     }
 
-    const token = await getManagementToken()
-    if (!token) {
-      reply
-        .status(500)
-        .send({ success: false, error: 'Missing management token' })
+    let token: string
+    try {
+      token = await getManagementToken()
+    } catch (err: any) {
+      reply.status(500).send({ success: false, error: err.message })
       return
     }
 

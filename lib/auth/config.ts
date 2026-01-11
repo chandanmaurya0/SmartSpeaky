@@ -15,7 +15,7 @@ export const Auth0Connections = {
   microsoft: 'windowslive',
   apple: 'apple',
   github: 'github',
-  database: 'ito-email-password',
+  database: 'Username-Password-Authentication',
 }
 
 export const RequiredAuth0Fields = [
