@@ -6,7 +6,9 @@ if (!stage && import.meta.env.DEV) {
   stage = 'local'
 }
 if (!stage) {
-  throw new Error('ITO_ENV or VITE_ITO_ENV must be set to dev or prod')
+  throw new Error(
+    'ITO_ENV or VITE_ITO_ENV must be set (e.g., dev, prod, or beta)',
+  )
 }
 
 const userDataDir = path.join(app.getPath('appData'), `Ito-${stage}`)

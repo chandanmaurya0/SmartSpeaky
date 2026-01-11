@@ -95,7 +95,8 @@ app.whenReady().then(async () => {
   preventAppNap()
 
   // Register the handler for the 'res' protocol now that the app is ready.
-  const appId = ITO_ENV === 'prod' ? 'ai.ito.ito' : `ai.ito.ito-${ITO_ENV}`
+  const appId =
+    ITO_ENV === 'prod' ? 'ai.ito.ito' : `ai.ito.ito-${ITO_ENV.toLowerCase()}`
   registerResourcesProtocol()
   electronApp.setAppUserModelId(appId)
 

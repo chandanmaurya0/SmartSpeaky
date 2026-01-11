@@ -58,7 +58,7 @@ module.exports = {
   },
   protocols: {
     name: 'ito',
-    schemes: stage === 'prod' ? ['ito'] : [`ito-dev`],
+    schemes: stage === 'prod' ? ['ito'] : [`ito-${stage.toLowerCase()}`],
   },
   mac: {
     target: 'default',

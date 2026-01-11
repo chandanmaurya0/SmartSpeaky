@@ -193,6 +193,13 @@ create_windows_installer() {
     print_status "Creating Windows installer..."
     
     print_info "Packaging application with Electron Builder..."
+    
+    # Ensure Vite embeds the stage for runtime
+    if [ -z "${VITE_ITO_ENV}" ]; then
+      export VITE_ITO_ENV="${ITO_ENV:-dev}"
+      print_info "Set VITE_ITO_ENV=${VITE_ITO_ENV} for build-time embedding"
+    fi
+
     bun run electron-vite build
     
     # Set npm config to avoid symlink issues on Windows
