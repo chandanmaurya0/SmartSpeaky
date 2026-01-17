@@ -1,4 +1,4 @@
-import { InteractionsTable } from '../sqlite/repo'
+import { grpcClient } from '../../clients/grpcClient'
 import mainStore from '../store'
 import { STORE_KEYS } from '../../constants/store-keys'
 import log from 'electron-log'
@@ -80,20 +80,20 @@ export class InteractionManager {
       const now = new Date().toISOString()
       const interactionData = {
         id: this.currentInteractionId,
-        user_id: userId,
+        user_id: userId, // Keep user_id in local object for structure compatibility, grpcClient might utilize it
         title,
         asr_output: asrOutput,
         llm_output: errorMessage ? { error: errorMessage } : {},
+        // For gRPC we send raw_audio, but check if grpcClient expects it (it does)
         raw_audio: audioBuffer.length > 0 ? audioBuffer : null,
-        raw_audio_id: null,
         duration_ms: durationMs,
         sample_rate: sampleRate,
         created_at: now,
         updated_at: now,
-        deleted_at: null,
       }
 
-      await InteractionsTable.upsert(interactionData)
+      // Convert to type expected by grpcClient (which I updated earlier to 'any' but handles mapping)
+      await grpcClient.createInteraction(interactionData as any)
 
       // Notify all windows about the new interaction
       BrowserWindow.getAllWindows().forEach(window => {

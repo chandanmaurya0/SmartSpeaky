@@ -19,7 +19,7 @@ import { getKeyDisplayInfo } from '@/lib/types/keyboard'
 import { usePlatform } from '@/app/hooks/usePlatform'
 
 export default function NotesContent() {
-  const { notes, loadNotes, addNote, deleteNote, updateNote } = useNotesStore()
+  const { notes, loadNotes, addNote, deleteNote, updateNote, isLoading } = useNotesStore()
   const { getItoModeShortcuts } = useSettingsStore()
   const keyboardShortcut = getItoModeShortcuts(ItoMode.TRANSCRIBE)[0].keys
   const [creatingNote, setCreatingNote] = useState(false)
@@ -138,8 +138,8 @@ export default function NotesContent() {
     searchQuery.trim() === ''
       ? notes
       : notes.filter(note =>
-          note.content.toLowerCase().includes(searchQuery.toLowerCase()),
-        )
+        note.content.toLowerCase().includes(searchQuery.toLowerCase()),
+      )
 
   const handleAddNote = async () => {
     if (noteContent.trim() !== '') {
@@ -270,7 +270,7 @@ export default function NotesContent() {
       return () => container.removeEventListener('scroll', handleScroll)
     }
 
-    return () => {}
+    return () => { }
   }, [])
 
   // Handle escape key for closing search
@@ -286,7 +286,7 @@ export default function NotesContent() {
       return () => document.removeEventListener('keydown', handleKeyDown)
     }
 
-    return () => {}
+    return () => { }
   }, [showSearch])
 
   // Handle clicks outside dropdown to close it
@@ -300,7 +300,7 @@ export default function NotesContent() {
       return () => document.removeEventListener('click', handleClickOutside)
     }
 
-    return () => {}
+    return () => { }
   }, [showDropdown])
 
   const scrollToTop = () => {
@@ -310,6 +310,15 @@ export default function NotesContent() {
         behavior: 'smooth',
       })
     }
+  }
+
+  /* Loading Overlay */
+  {
+    isLoading && (
+      <div className="absolute inset-0 bg-white/50 z-10 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      </div>
+    )
   }
 
   return (
@@ -364,6 +373,7 @@ export default function NotesContent() {
           )}
           <textarea
             ref={textareaRef}
+            disabled={isLoading}
             className={`w-full pt-6 px-6 focus:outline-none resize-none overflow-hidden ${creatingNote ? 'cursor-text' : 'cursor-pointer'}`}
             value={noteContent}
             onChange={e => updateNoteContent(e.target.value)}
@@ -375,9 +385,10 @@ export default function NotesContent() {
             <div className="absolute bottom-3 right-3">
               <button
                 onClick={handleAddNote}
-                className="bg-neutral-200 px-4 py-2 rounded-md font-semibold hover:bg-neutral-300 cursor-pointer"
+                disabled={isLoading}
+                className="bg-neutral-200 px-4 py-2 rounded-md font-semibold hover:bg-neutral-300 cursor-pointer disabled:opacity-50"
               >
-                Add note
+                {isLoading ? 'Saving...' : 'Add note'}
               </button>
             </div>
           )}

@@ -179,7 +179,7 @@ export const startServer = async () => {
     connectRpcServer.log.error(error)
     reply.status(500).send({
       error: 'Internal Server Error',
-      message: error.message,
+      message: error instanceof Error ? error.message : String(error),
     })
   })
 

@@ -1,7 +1,6 @@
 import { IpcRendererEvent, ipcRenderer } from 'electron'
 import { AdvancedSettings } from '../main/store'
-import { DbResult } from '../main/sqlite/repo'
-import { DictionaryItem } from '../main/sqlite/models'
+import { DictionaryItem as DictionaryItemPb } from '@/app/generated/ito_pb'
 
 const api = {
   /**
@@ -107,13 +106,13 @@ const api = {
   },
   dictionary: {
     getAll: () => ipcRenderer.invoke('dictionary:get-all'),
-    add: (item: any): Promise<DbResult<DictionaryItem>> =>
+    add: (item: any): Promise<DictionaryItemPb> =>
       ipcRenderer.invoke('dictionary:add', item),
     update: (
       id: string,
       word: string,
       pronunciation: string | null,
-    ): Promise<DbResult<void>> =>
+    ): Promise<void> =>
       ipcRenderer.invoke('dictionary:update', { id, word, pronunciation }),
     delete: (id: string) => ipcRenderer.invoke('dictionary:delete', id),
   },
