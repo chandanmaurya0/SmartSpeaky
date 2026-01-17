@@ -5,7 +5,7 @@ const fs = require('fs')
 const path = require('path')
 
 const platform = os.platform()
-const appNames = ['Ito-dev', 'Ito-local', 'Ito-prod', 'Ito']
+const appNames = ['Ito-dev', 'Ito-local', 'Ito-prod', 'Ito', 'Ito-BETA']
 
 function getAppDataPath(appName) {
   if (platform === 'darwin') {

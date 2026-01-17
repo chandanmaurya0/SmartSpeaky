@@ -5,8 +5,6 @@ import {
   DictionaryItem,
   LlmSettings,
   AdvancedSettings,
-
-  UserSubscription,
 } from './models.js'
 import {
   CreateNoteRequest,
@@ -292,6 +290,8 @@ export class AdvancedSettingsRepository {
         editing_prompt: llmSettings.editing_prompt,
         no_speech_threshold: llmSettings.no_speech_threshold,
         low_quality_threshold: llmSettings.low_quality_threshold,
+        asr_api_key: llmSettings.asr_api_key,
+        llm_api_key: llmSettings.llm_api_key,
       },
       created_at: llmSettings.created_at,
       updated_at: llmSettings.updated_at,
@@ -306,9 +306,9 @@ export class AdvancedSettingsRepository {
       `INSERT INTO llm_settings (
          user_id, asr_model, asr_provider, asr_prompt, llm_provider, llm_model, 
          llm_temperature, transcription_prompt, editing_prompt, no_speech_threshold, 
-         low_quality_threshold, updated_at
+         low_quality_threshold, asr_api_key, llm_api_key, updated_at
        )
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, current_timestamp)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, current_timestamp)
        ON CONFLICT (user_id)
        DO UPDATE SET
          asr_model = EXCLUDED.asr_model,
@@ -321,6 +321,8 @@ export class AdvancedSettingsRepository {
          editing_prompt = EXCLUDED.editing_prompt,
          no_speech_threshold = EXCLUDED.no_speech_threshold,
          low_quality_threshold = EXCLUDED.low_quality_threshold,
+         asr_api_key = EXCLUDED.asr_api_key,
+         llm_api_key = EXCLUDED.llm_api_key,
          updated_at = current_timestamp
        RETURNING *`,
       [
@@ -335,6 +337,8 @@ export class AdvancedSettingsRepository {
         settingsData.llm?.editingPrompt || '',
         settingsData.llm?.noSpeechThreshold || 0.0,
         settingsData.llm?.lowQualityThreshold || 0.0,
+        settingsData.llm?.asrApiKey || '',
+        settingsData.llm?.llmApiKey || '',
       ],
     )
 
@@ -353,6 +357,8 @@ export class AdvancedSettingsRepository {
         editing_prompt: llmSettings.editing_prompt,
         no_speech_threshold: llmSettings.no_speech_threshold,
         low_quality_threshold: llmSettings.low_quality_threshold,
+        asr_api_key: llmSettings.asr_api_key,
+        llm_api_key: llmSettings.llm_api_key,
       },
       created_at: llmSettings.created_at,
       updated_at: llmSettings.updated_at,
@@ -401,67 +407,5 @@ export class IpLinkRepository {
       [ipHash],
     )
     return res.rows[0]?.website_distinct_id ?? null
-  }
-}
-
-
-
-export class SubscriptionsRepository {
-  static async getByUserId(
-    userId: string,
-  ): Promise<UserSubscription | undefined> {
-    const res = await pool.query<UserSubscription>(
-      'SELECT * FROM user_subscriptions WHERE user_id = $1',
-      [userId],
-    )
-    return res.rows[0]
-  }
-
-  static async upsertActive(
-    userId: string,
-    stripeCustomerId: string | null,
-    stripeSubscriptionId: string | null,
-    startAt: Date | null,
-    endAt?: Date | null,
-  ): Promise<UserSubscription> {
-    const res = await pool.query<UserSubscription>(
-      `INSERT INTO user_subscriptions (
-         user_id, stripe_customer_id, stripe_subscription_id, subscription_start_at, subscription_end_at, updated_at
-       ) VALUES ($1, $2, $3, $4, $5, current_timestamp)
-       ON CONFLICT (user_id)
-       DO UPDATE SET
-         stripe_customer_id = EXCLUDED.stripe_customer_id,
-         stripe_subscription_id = EXCLUDED.stripe_subscription_id,
-         subscription_start_at = EXCLUDED.subscription_start_at,
-         subscription_end_at = EXCLUDED.subscription_end_at,
-         updated_at = current_timestamp
-       RETURNING *`,
-      [userId, stripeCustomerId, stripeSubscriptionId, startAt, endAt ?? null],
-    )
-    return res.rows[0]
-  }
-
-  static async updateSubscriptionEndAt(
-    userId: string,
-    endAt: Date | null,
-  ): Promise<UserSubscription> {
-    const res = await pool.query<UserSubscription>(
-      `UPDATE user_subscriptions
-       SET subscription_end_at = $2, updated_at = current_timestamp
-       WHERE user_id = $1
-       RETURNING *`,
-      [userId, endAt],
-    )
-    return res.rows[0]
-  }
-
-  static async deleteByStripeSubscriptionId(
-    stripeSubscriptionId: string,
-  ): Promise<boolean> {
-    const res = await pool.query(
-      'DELETE FROM user_subscriptions WHERE stripe_subscription_id = $1',
-      [stripeSubscriptionId],
-    )
-    return (res.rowCount ?? 0) > 0
   }
 }

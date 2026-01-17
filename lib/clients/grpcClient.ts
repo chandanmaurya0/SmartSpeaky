@@ -176,6 +176,8 @@ class GrpcClient {
         'no-speech-threshold',
         advancedSettings.llm.noSpeechThreshold?.toString() ?? '',
       )
+      headers.set('asr-api-key', advancedSettings.llm.asrApiKey ?? '')
+      headers.set('llm-api-key', advancedSettings.llm.llmApiKey ?? '')
 
       headers.set('mode', mode.toString())
 
@@ -288,7 +290,7 @@ class GrpcClient {
   ) {
     return this.withRetry(async () => {
       const response = await this.client.transcribeStreamV2(stream, {
-        headers: this.getHeaders(),
+        headers: await this.getHeadersWithMetadata(0 as unknown as ItoMode),
         signal,
       })
       return response
@@ -511,6 +513,8 @@ class GrpcClient {
           editingPrompt: settings.llm.editingPrompt ?? undefined,
           llmTemperature: settings.llm.llmTemperature ?? undefined,
           noSpeechThreshold: settings.llm.noSpeechThreshold ?? undefined,
+          asrApiKey: settings.llm.asrApiKey ?? undefined,
+          llmApiKey: settings.llm.llmApiKey ?? undefined,
         },
       })
       return await this.client.updateAdvancedSettings(request, {

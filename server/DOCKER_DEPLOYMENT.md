@@ -31,7 +31,6 @@ cp .env.example .env
 **Optional Variables:**
 - `REQUIRE_AUTH` - Enable Auth0 (default: false)
 - `AUTH0_DOMAIN`, `AUTH0_AUDIENCE` - Auth0 config (if auth enabled)
-- `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` - Stripe billing
 - `CEREBRAS_API_KEY` - Alternative AI provider
 
 ### 2. Database Migrations

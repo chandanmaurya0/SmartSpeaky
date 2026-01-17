@@ -55,7 +55,9 @@ export default function KeyboardTestContent() {
       <div className="flex w-[55%] items-center justify-center bg-gradient-to-b from-purple-50/10 to-purple-100 border-l-2 border-purple-100">
         <KeyboardShortcutEditor
           shortcut={keyboardShortcut}
-          onShortcutChange={updateKeyboardShortcut}
+          onShortcutChange={(id, keys) =>
+            updateKeyboardShortcut(id, keys as KeyName[])
+          }
           keySize={80}
           editButtonText="No, change shortcut"
           confirmButtonText="Yes"
@@ -67,7 +69,6 @@ export default function KeyboardTestContent() {
           editButtonClassName="w-44"
           confirmButtonClassName="w-16"
           className="rounded-xl shadow-lg p-6 flex flex-col items-center min-w-[500px] max-h-[280px]"
-          mode={ItoMode.TRANSCRIBE}
         />
       </div>
     </div>

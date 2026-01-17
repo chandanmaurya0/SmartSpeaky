@@ -415,29 +415,6 @@ export function registerIPC() {
     )
   })
 
-  // Billing routes proxy
-  handleIPC('billing:create-checkout-session', async () => {
-    return itoHttpClient.post('/billing/checkout')
-  })
-
-  handleIPC(
-    'billing:confirm-session',
-    async (_e, { sessionId }: { sessionId: string }) => {
-      return itoHttpClient.post('/billing/confirm', { session_id: sessionId })
-    },
-  )
-
-  handleIPC('billing:status', async () => {
-    return itoHttpClient.get('/billing/status')
-  })
-
-  handleIPC('billing:cancel-subscription', async () => {
-    return itoHttpClient.post('/billing/cancel')
-  })
-
-  handleIPC('billing:reactivate-subscription', async () => {
-    return itoHttpClient.post('/billing/reactivate')
-  })
   handleIPC('open-auth-window', async (_e, { url, redirectUri }) => {
     try {
       if (!url || !redirectUri)

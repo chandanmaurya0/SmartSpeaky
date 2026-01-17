@@ -1,7 +1,6 @@
 import { ElectronAPI } from '@electron-toolkit/preload'
 import type api from './api'
 
-
 interface KeyEvent {
   type: 'keydown' | 'keyup'
   key: string
@@ -115,29 +114,6 @@ declare global {
         accessToken: string | null,
       ) => Promise<void>
 
-      billing: {
-        createCheckoutSession: () => Promise<{
-          success: boolean
-          url?: string
-          error?: string
-          status?: number
-        }>
-        confirmSession: (sessionId: string) => Promise<{
-          success: boolean
-          pro_status?: 'active_pro' | 'none'
-          subscriptionStartAt?: string
-          error?: string
-          status?: number
-        }>
-        status: () => Promise<{
-          success: boolean
-          pro_status: 'active_pro' | 'none'
-          subscriptionStartAt?: string
-
-          error?: string
-          status?: number
-        }>
-      }
       deleteUserData: () => Promise<void>
       selectedText: SelectedTextAPI
       logs: {

@@ -13,11 +13,13 @@ const getMacResources = () =>
     to: `binaries/${binary}`,
   }))
 
-const getWindowsResources = () =>
-  nativeBinaries.map(binary => ({
-    from: `native/target/x86_64-pc-windows-msvc/release/${binary}.exe`,
+const getWindowsResources = () => {
+  const rustTarget = process.env.RUST_TARGET || 'x86_64-pc-windows-msvc'
+  return nativeBinaries.map(binary => ({
+    from: `native/target/${rustTarget}/release/${binary}.exe`,
     to: `binaries/${binary}.exe`,
   }))
+}
 
 const stage = process.env.ITO_ENV || 'prod'
 module.exports = {
@@ -54,20 +56,25 @@ module.exports = {
   asar: true,
   asarUnpack: ['resources/**'],
   extraMetadata: {
-    version: process.env.VITE_ITO_VERSION || '0.0.0-dev',
+    version: process.env.VITE_VIBETYPE_VERSION || '0.0.0-dev',
   },
   protocols: {
     name: 'ito',
-    schemes: stage === 'prod' ? ['ito'] : [`ito-dev`],
+    schemes: stage === 'prod' ? ['ito'] : [`ito-${stage.toLowerCase()}`],
   },
   mac: {
     target: 'default',
     icon: 'resources/build/icon.icns',
     darkModeSupport: true,
-    hardenedRuntime: stage === 'prod',
+    hardenedRuntime:
+      stage === 'prod' && process.env.CSC_IDENTITY_AUTO_DISCOVERY !== 'false',
     gatekeeperAssess: false,
-    identity: stage === 'prod' ? 'Demox Labs, Inc. (294ZSTM7UB)' : '-',
-    notarize: stage === 'prod',
+    identity:
+      stage === 'prod' && process.env.CSC_IDENTITY_AUTO_DISCOVERY !== 'false'
+        ? 'Demox Labs, Inc. (294ZSTM7UB)'
+        : '-',
+    notarize:
+      stage === 'prod' && process.env.CSC_IDENTITY_AUTO_DISCOVERY !== 'false',
     entitlements: 'build/entitlements.mac.plist',
     entitlementsInherit: 'build/entitlements.mac.inherit.plist',
     extendInfo: {

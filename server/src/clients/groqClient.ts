@@ -46,6 +46,17 @@ class GroqClient implements LlmProvider {
   }
 
   /**
+   * Creates a new GroqClient instance with a custom API key.
+   * This allows using user-provided API keys instead of environment variables.
+   * @param apiKey The API key to use for this instance
+   * @param userCommandModel Optional model to use for user commands
+   * @returns A new GroqClient instance
+   */
+  public static createInstance(apiKey: string, userCommandModel: string = ''): GroqClient {
+    return new GroqClient(apiKey, userCommandModel)
+  }
+
+  /**
    * Uses a thinking model to adjust/improve a transcript.
    * @param transcript The original transcript text.
    * @returns The adjusted transcript.
@@ -173,16 +184,17 @@ class GroqClient implements LlmProvider {
   }
 }
 
+// Export the class for creating custom instances
+export { GroqClient }
+
 // --- Singleton Instance ---
 // Create and export a single, pre-configured instance of the client for use across the server.
-// Only check for GROQ_API_KEY since ASR model is now provided per-request
-if (!process.env.GROQ_API_KEY) {
-  console.error(
-    'FATAL: GROQ_API_KEY is not set in the .env file. The application cannot start.',
-  )
-  process.exit(1)
-}
-const apiKey = process.env.GROQ_API_KEY
+// GROQ_API_KEY is now optional since users can provide their own API keys
+const apiKey = process.env.GROQ_API_KEY || ''
 
 // Note: userCommandModel is empty for now as we are only using transcription.
-export const groqClient = new GroqClient(apiKey, '')
+// This singleton is kept for backward compatibility but may not be available if no env key is set
+export const groqClient = apiKey ? new GroqClient(apiKey, '') : ({
+  isAvailable: false,
+  createInstance: GroqClient.createInstance,
+} as any)

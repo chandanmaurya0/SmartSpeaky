@@ -1,5 +1,6 @@
-const ITO_ENV = (process.env.ITO_ENV || 'prod').toLowerCase()
-const DEEPLINK_SCHEME = ITO_ENV === 'prod' ? 'ito' : `ito-dev`
+const ITO_ENV = (process.env.ITO_ENV || 'local').toLowerCase()
+const DEEPLINK_SCHEME =
+  process.env.APP_PROTOCOL || (ITO_ENV === 'prod' ? 'ito' : `ito-${ITO_ENV}`)
 
 interface CallbackPageParams {
   code: string

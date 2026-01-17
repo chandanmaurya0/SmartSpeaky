@@ -100,7 +100,7 @@ export class TranscribeStreamV2Handler {
         : prepareAudioForTranscription(fullAudio)
 
       // Extract configuration
-      const asrConfig = this.extractAsrConfig(mergedConfig)
+      const asrConfig = this.extractAsrConfig(mergedConfig, context)
 
       // Time transcription
       let transcript = await serverTimingCollector.timeAsync(
@@ -118,10 +118,23 @@ export class TranscribeStreamV2Handler {
 
       const mode = mergedConfig.context?.mode ?? detectItoMode(transcript)
 
+      // Resolve LLM API key: Config > Header > Default
+      const configKey = mergedConfig.llmSettings?.llmApiKey
+      const headerKey = context?.requestHeader.get('llm-api-key') || undefined
+
+      const rawLlmApiKey: string | undefined = configKey || headerKey
+
+      const llmApiKey = this.resolveOrDefault(
+        rawLlmApiKey,
+        (DEFAULT_ADVANCED_SETTINGS as any).llmApiKey || '',
+      )
+
       const advancedSettings = this.prepareAdvancedSettings(
         mergedConfig,
         asrConfig.asrModel,
         asrConfig.asrProvider,
+        asrConfig.asrApiKey,
+        llmApiKey,
         asrConfig.noSpeechThreshold,
       )
 
@@ -326,8 +339,16 @@ export class TranscribeStreamV2Handler {
     return mergedConfig
   }
 
-  private extractAsrConfig(mergedConfig: StreamConfig) {
-    return {
+  private extractAsrConfig(
+    mergedConfig: StreamConfig,
+    context?: HandlerContext,
+  ) {
+    let asrApiKey = mergedConfig.llmSettings?.asrApiKey
+    if (!asrApiKey && context) {
+      asrApiKey = context.requestHeader.get('asr-api-key') || undefined
+    }
+
+    const config = {
       asrModel: this.resolveOrDefault(
         mergedConfig.llmSettings?.asrModel,
         DEFAULT_ADVANCED_SETTINGS.asrModel,
@@ -336,12 +357,26 @@ export class TranscribeStreamV2Handler {
         mergedConfig.llmSettings?.asrProvider,
         DEFAULT_ADVANCED_SETTINGS.asrProvider,
       ),
-      noSpeechThreshold: this.resolveOrDefault(
-        mergedConfig.llmSettings?.noSpeechThreshold,
-        DEFAULT_ADVANCED_SETTINGS.noSpeechThreshold,
+      asrApiKey: this.resolveOrDefault(
+        asrApiKey,
+        (DEFAULT_ADVANCED_SETTINGS as any).asrApiKey || '',
       ),
+      noSpeechThreshold:
+        mergedConfig.llmSettings?.noSpeechThreshold ||
+        DEFAULT_ADVANCED_SETTINGS.noSpeechThreshold,
       vocabulary: mergedConfig.vocabulary,
     }
+
+    console.log('Extracted ASR Config:', {
+      asrModel: config.asrModel,
+      asrProvider: config.asrProvider,
+      asrApiKey: config.asrApiKey
+        ? `${config.asrApiKey.substring(0, 10)}...`
+        : 'empty',
+      noSpeechThreshold: config.noSpeechThreshold,
+    })
+
+    return config
   }
 
   /**
@@ -362,6 +397,8 @@ export class TranscribeStreamV2Handler {
     mergedConfig: StreamConfig,
     asrModel: string,
     asrProvider: string,
+    asrApiKey: string,
+    llmApiKey: string,
     noSpeechThreshold: number,
   ) {
     return {
@@ -372,6 +409,14 @@ export class TranscribeStreamV2Handler {
       asrProvider: this.resolveOrDefault(
         asrProvider,
         DEFAULT_ADVANCED_SETTINGS.asrProvider,
+      ),
+      asrApiKey: this.resolveOrDefault(
+        asrApiKey,
+        (DEFAULT_ADVANCED_SETTINGS as any).asrApiKey || '',
+      ),
+      llmApiKey: this.resolveOrDefault(
+        llmApiKey,
+        (DEFAULT_ADVANCED_SETTINGS as any).llmApiKey || '',
       ),
       asrPrompt: this.resolveOrDefault(
         mergedConfig.llmSettings?.asrPrompt,
@@ -416,7 +461,7 @@ export class TranscribeStreamV2Handler {
       throw new ConnectError('Stream cancelled by client', Code.Canceled)
     }
 
-    const asrClient = getAsrProvider(asrConfig.asrProvider)
+    const asrClient = getAsrProvider(asrConfig.asrProvider, asrConfig.asrApiKey)
     const transcript = await asrClient.transcribeAudio(audioWav, {
       fileType: 'wav',
       asrModel: asrConfig.asrModel,
@@ -447,7 +492,10 @@ export class TranscribeStreamV2Handler {
 
     const userPromptPrefix = getPromptForMode(mode, advancedSettings)
     const userPrompt = createUserPromptWithContext(transcript, windowContext)
-    const llmProvider = getLlmProvider(advancedSettings.llmProvider)
+    const llmProvider = getLlmProvider(
+      advancedSettings.llmProvider,
+      advancedSettings.llmApiKey,
+    )
 
     const adjustedTranscript = await serverTimingCollector.timeAsync(
       ServerTimingEventName.LLM_ADJUSTMENT,

@@ -141,7 +141,7 @@ build_electron_app() {
     
     # Build the application using electron-vite
     print_info "Building application with Electron Vite..."
-    bun run electron-vite build
+    bunx electron-vite build
     
     print_status "Electron application built successfully!"
 }
@@ -154,8 +154,8 @@ create_dmg() {
     local stage="${ITO_ENV:-prod}"
     if [ "$stage" = "prod" ]; then
       if [ -z "$APPLE_ID" ] || [ -z "$APPLE_APP_SPECIFIC_PASSWORD" ] || [ -z "$APPLE_TEAM_ID" ]; then
-        print_error "Prod build requires notarization credentials (APPLE_ID, APPLE_TEAM_ID, APPLE_APP_SPECIFIC_PASSWORD)."
-        exit 1
+        print_warning "Prod build credentials missing. Proceeding with UNSIGNED build (skipping notarization)."
+        export CSC_IDENTITY_AUTO_DISCOVERY=false
       else
         print_info "Prod build: notarization credentials found."
       fi
@@ -163,14 +163,20 @@ create_dmg() {
       print_info "Non-prod build ('$stage'): skipping notarization and code signing auto-discovery."
       export CSC_IDENTITY_AUTO_DISCOVERY=false
     fi
-    
+
+    # Ensure dependencies are installed
+    if [ ! -d "node_modules" ]; then
+        print_info "Installing dependencies..."
+        bun install
+    fi
+
     print_info "Packaging application with Electron Builder (forcing DMG target)..."
     # Ensure Vite embeds the stage for runtime
     if [ -z "${VITE_ITO_ENV}" ]; then
       export VITE_ITO_ENV="${ITO_ENV:-dev}"
       print_info "Set VITE_ITO_ENV=${VITE_ITO_ENV} for build-time embedding"
     fi
-    bun run electron-vite build
+    bunx electron-vite build
     bunx electron-builder --config electron-builder.config.js --mac dmg zip --universal --publish=never
     
     print_status "macOS DMG installer created successfully!"
@@ -193,7 +199,14 @@ create_windows_installer() {
     print_status "Creating Windows installer..."
     
     print_info "Packaging application with Electron Builder..."
-    bun run electron-vite build
+    
+    # Ensure Vite embeds the stage for runtime
+    if [ -z "${VITE_ITO_ENV}" ]; then
+      export VITE_ITO_ENV="${ITO_ENV:-dev}"
+      print_info "Set VITE_ITO_ENV=${VITE_ITO_ENV} for build-time embedding"
+    fi
+
+    bunx electron-vite build
     
     # Set npm config to avoid symlink issues on Windows
     export npm_config_cache=$PWD/.npm-cache
@@ -229,11 +242,18 @@ create_windows_installer() {
         PROJECT_PATH="$(pwd)"
     fi
     
+    # Determine Rust target based on host OS (matches build-binaries.sh logic)
+    local rust_target="x86_64-pc-windows-gnu"
+    if [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "win32" ]] || [[ "$OS" == "Windows_NT" ]]; then
+        rust_target="x86_64-pc-windows-msvc"
+    fi
+
     docker run --rm --platform linux/amd64 \
       --env CSC_IDENTITY_AUTO_DISCOVERY=false \
       --env SKIP_SIGNING=true \
-      --env VITE_ITO_VERSION="${VITE_ITO_VERSION}" \
+      --env VITE_VIBETYPE_VERSION="${VITE_VIBETYPE_VERSION}" \
       --env ITO_ENV="${ITO_ENV}" \
+      --env RUST_TARGET="${rust_target}" \
       -v "${PROJECT_PATH}":/project \
       electronuserland/builder:wine \
       bash -c "

@@ -11,6 +11,8 @@ export interface LlmSettings {
   transcriptionPrompt: string | null
   editingPrompt: string | null
   noSpeechThreshold: number | null
+  asrApiKey: string | null
+  llmApiKey: string | null
 }
 
 interface AdvancedSettingsState {

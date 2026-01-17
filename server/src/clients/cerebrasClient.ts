@@ -18,7 +18,7 @@ export const itoVocabulary = ['Ito', 'Hey Ito']
 /**
  * A TypeScript client for interacting with the Cerebras API.
  */
-class CerebrasClient implements LlmProvider {
+export class CerebrasClient implements LlmProvider {
   private readonly _client: Cerebras
   private readonly _userCommandModel: string
   private readonly _isValid: boolean
@@ -30,6 +30,15 @@ class CerebrasClient implements LlmProvider {
     this._client = new Cerebras({ apiKey })
     this._userCommandModel = userCommandModel
     this._isValid = true
+  }
+
+  /**
+   * Creates a new instance of CerebrasClient with the provided API key.
+   * @param apiKey The API key to use for the client
+   * @returns A new CerebrasClient instance
+   */
+  public static createInstance(apiKey: string): CerebrasClient {
+    return new CerebrasClient(apiKey, DEFAULT_ADVANCED_SETTINGS.llmModel)
   }
 
   /**

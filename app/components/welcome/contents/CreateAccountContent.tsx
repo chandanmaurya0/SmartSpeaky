@@ -13,9 +13,7 @@ import CheckEmailContent from './CheckEmailContent'
 import ItoIcon from '../../icons/ItoIcon'
 import UserCog from '@/app/assets/icons/UserCog.svg'
 import GoogleIcon from '../../icons/GoogleIcon'
-import AppleIcon from '../../icons/AppleIcon'
 import GitHubIcon from '../../icons/GitHubIcon'
-import MicrosoftIcon from '../../icons/MicrosoftIcon'
 import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '../../auth/useAuth'
 import { checkLocalServerHealth } from '@/app/utils/healthCheck'
@@ -43,8 +41,6 @@ export default function CreateAccountContent() {
     user,
     isAuthenticated,
     loginWithGoogle,
-    loginWithMicrosoft,
-    loginWithApple,
     loginWithGitHub,
     loginWithSelfHosted,
     signupWithEmail,
@@ -113,12 +109,14 @@ export default function CreateAccountContent() {
         case 'google':
           await loginWithGoogle()
           break
+        /*
         case 'microsoft':
           await loginWithMicrosoft()
           break
         case 'apple':
           await loginWithApple()
           break
+        */
         case 'github':
           await loginWithGitHub()
           break
@@ -173,7 +171,7 @@ export default function CreateAccountContent() {
       <EmailLoginContent
         initialEmail={email}
         onBack={() => setShowEmailLogin(false)}
-        onContinue={() => {}}
+        onContinue={() => { }}
       />
     )
   }
@@ -206,7 +204,7 @@ export default function CreateAccountContent() {
         {/* Title and subtitle */}
         <div className="text-center mb-10">
           <h1 className="text-3xl font-semibold mb-3 text-foreground">
-            Get started with Ito
+            Get started with VibeType
           </h1>
           <p className="text-muted-foreground text-base">
             Smart dictation. Everywhere you want.
@@ -224,30 +222,6 @@ export default function CreateAccountContent() {
               <GoogleIcon className="size-5" />
               <div className="w-full text-sm font-medium">
                 Continue with Google
-              </div>
-            </Button>
-
-            <Button
-              variant="outline"
-              className="w-full h-12 flex items-center justify-start gap-3 text-sm font-medium"
-              onClick={() => handleSocialAuth('microsoft')}
-            >
-              <MicrosoftIcon className="size-5" />
-              <div className="w-full text-sm font-medium">
-                Continue with Microsoft
-              </div>
-            </Button>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <Button
-              variant="outline"
-              className="h-12 flex items-center justify-start gap-2 text-sm font-medium"
-              onClick={() => handleSocialAuth('apple')}
-            >
-              <AppleIcon className="size-5" />
-              <div className="w-full text-sm font-medium">
-                Continue with Apple
               </div>
             </Button>
 
@@ -288,9 +262,8 @@ export default function CreateAccountContent() {
             aria-describedby={
               emailTouched && !emailOk ? 'signup-email-error' : undefined
             }
-            className={`w-full h-12 px-3 rounded-md border bg-background text-foreground placeholder:text-muted-foreground ${
-              emailTouched && !emailOk ? 'border-destructive' : 'border-border'
-            }`}
+            className={`w-full h-12 px-3 rounded-md border bg-background text-foreground placeholder:text-muted-foreground ${emailTouched && !emailOk ? 'border-destructive' : 'border-border'
+              }`}
           />
           {emailTouched && !emailOk && (
             <p id="signup-email-error" className="text-xs text-destructive">
@@ -342,7 +315,7 @@ export default function CreateAccountContent() {
 
             <div className="rounded-md bg-[#F5F5F5] p-4">
               <p className="text-sm font-medium leading-5 text-black">
-                Running Ito locally requires additional setup. Please refer to
+                Running VibeType locally requires additional setup. Please refer to
                 our Github and Documentation
               </p>
               <div className="mt-4 flex w-full gap-4">

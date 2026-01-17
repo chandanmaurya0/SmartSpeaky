@@ -43,6 +43,8 @@ interface LlmSettingsBase {
   editing_prompt: string | null
   no_speech_threshold: number | null
   low_quality_threshold: number | null
+  asr_api_key: string | null
+  llm_api_key: string | null
 }
 
 export interface LlmSettings extends LlmSettingsBase {
@@ -56,18 +58,6 @@ export interface AdvancedSettings {
   id: string
   user_id: string
   llm: LlmSettingsBase
-  created_at: Date
-  updated_at: Date
-}
-
-
-
-export interface UserSubscription {
-  user_id: string
-  stripe_customer_id: string | null
-  stripe_subscription_id: string | null
-  subscription_start_at: Date | null
-  subscription_end_at: Date | null
   created_at: Date
   updated_at: Date
 }

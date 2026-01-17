@@ -8,7 +8,6 @@ import {
 import { ItoIcon } from '../icons/ItoIcon'
 import { useMainStore } from '@/app/store/useMainStore'
 import { useAuth } from '@/app/components/auth/useAuth'
-import useBillingState, { ProStatus } from '@/app/hooks/useBillingState'
 import { useEffect, useState, useRef } from 'react'
 import { NavItem } from '../ui/nav-item'
 import HomeContent from './contents/HomeContent'
@@ -16,16 +15,12 @@ import DictionaryContent from './contents/DictionaryContent'
 import NotesContent from './contents/NotesContent'
 import SettingsContent from './contents/SettingsContent'
 import AboutContent from './contents/AboutContent'
-import { SubscriptionStatusWidget } from './SubscriptionStatusWidget'
 
 export default function HomeKit() {
   const { navExpanded, currentPage, setCurrentPage } = useMainStore()
   const { user } = useAuth()
-  const billingState = useBillingState()
   const [showText, setShowText] = useState(navExpanded)
   const previousUserIdRef = useRef<string | undefined>(undefined)
-
-  const isPro = billingState.proStatus === ProStatus.ACTIVE_PRO
 
   // Reset flags when user changes
   useEffect(() => {
@@ -41,33 +36,6 @@ export default function HomeKit() {
     }
   }, [user?.id])
 
-  // Listen for billing deep-link events and finalize subscription
-  useEffect(() => {
-    const offSuccess = window.api.on(
-      'billing-session-completed',
-      async (sessionId: string) => {
-        try {
-          if (sessionId) {
-            await window.api.billing.confirmSession(sessionId)
-          }
-          // Refresh billing state to update UI (e.g., PRO badge)
-          await billingState.refresh()
-        } catch (err) {
-          console.error('Failed to finalize billing session', err)
-        }
-      },
-    )
-
-    const offCancel = window.api.on('billing-session-cancelled', () => {
-      // No-op for now; could show a toast in the future
-    })
-
-    return () => {
-      offSuccess?.()
-      offCancel?.()
-    }
-  }, [billingState])
-
   // Handle text and positioning animation timing
   useEffect(() => {
     if (navExpanded) {
@@ -80,7 +48,7 @@ export default function HomeKit() {
       // When collapsing: hide text immediately, then center icons after slide completes
       setShowText(false)
       // Return no-op function
-      return () => {}
+      return () => { }
     }
   }, [navExpanded])
 
@@ -118,15 +86,8 @@ export default function HomeKit() {
             <span
               className={`text-2xl font-bold transition-opacity duration-100 ${showText ? 'opacity-100' : 'opacity-0'} ${showText ? 'ml-2' : 'w-0 overflow-hidden'}`}
             >
-              ito
+              VibeType
             </span>
-            {isPro && showText && (
-              <span
-                className={`text-xs font-semibold px-2 py-0.5 rounded-md bg-gradient-to-r from-purple-500 to-pink-500 text-white transition-opacity duration-100 ${showText ? 'opacity-100' : 'opacity-0'} ${showText ? 'ml-2' : 'w-0 overflow-hidden'}`}
-              >
-                PRO
-              </span>
-            )}
           </div>
           {/* Nav */}
           <div className="flex flex-col gap-1 text-sm">
@@ -167,8 +128,6 @@ export default function HomeKit() {
             />
           </div>
         </div>
-
-        <SubscriptionStatusWidget navExpanded={navExpanded} />
       </div>
 
       {/* Main Content */}

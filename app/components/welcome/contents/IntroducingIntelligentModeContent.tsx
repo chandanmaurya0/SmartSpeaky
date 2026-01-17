@@ -6,6 +6,7 @@ import KeyboardShortcutEditor from '../../ui/keyboard-shortcut-editor'
 import { ItoMode } from '@/app/generated/ito_pb'
 import { Tip } from '../../ui/tip'
 import { useSettingsStore } from '@/app/store/useSettingsStore'
+import { KeyName } from '@/lib/types/keyboard'
 
 export default function IntroducingIntelligentMode() {
   const { incrementOnboardingStep, decrementOnboardingStep } =
@@ -27,14 +28,14 @@ export default function IntroducingIntelligentMode() {
               &lt; Back
             </button>
             <div className="text-2xl mb-1 font-medium">
-              Introducing Ito Intelligent Mode
+              Introducing VibeType Intelligent Mode
             </div>
             <div className="mb-4 text-lg font-light">
               What you ask gets written.
             </div>
             {[
-              'Press Hotkey -> Speak to Ito',
-              'Ito send your speech to LLM',
+              'Press Hotkey -> Speak to VibeType',
+              'VibeType sends your speech to LLM',
               'Pastes LLM output into text box',
             ].map((step, index) => (
               <div
@@ -60,7 +61,7 @@ export default function IntroducingIntelligentMode() {
               </div>
             ))}
             <Tip
-              tipText="You can also trigger Intelligent Mode by saying 'Hey Ito' when using the regular dictation hotkey."
+              tipText="You can also trigger Intelligent Mode by saying 'Hey VibeType' when using the regular dictation hotkey."
               className="mt-3"
             />
           </div>
@@ -75,7 +76,9 @@ export default function IntroducingIntelligentMode() {
       <div className="flex w-[55%] items-center justify-center bg-gradient-to-b from-purple-50/10 to-purple-100 border-l-2 border-purple-100">
         <KeyboardShortcutEditor
           shortcut={keyboardShortcut}
-          onShortcutChange={updateKeyboardShortcut}
+          onShortcutChange={(id, keys) =>
+            updateKeyboardShortcut(id, keys as KeyName[])
+          }
           keySize={80}
           editButtonText="Change Shortcut"
           showConfirmButton={true}
@@ -86,7 +89,6 @@ export default function IntroducingIntelligentMode() {
           editButtonClassName="w-44"
           confirmButtonClassName="hidden"
           className="rounded-xl shadow-lg p-6 flex flex-col items-center min-w-[500px] max-h-[280px]"
-          mode={ItoMode.EDIT}
         />
       </div>
     </div>

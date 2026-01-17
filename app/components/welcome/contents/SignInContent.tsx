@@ -7,9 +7,7 @@ import {
 import { useOnboardingStore } from '@/app/store/useOnboardingStore'
 import ItoIcon from '../../icons/ItoIcon'
 import GoogleIcon from '../../icons/GoogleIcon'
-import AppleIcon from '../../icons/AppleIcon'
 import GitHubIcon from '../../icons/GitHubIcon'
-import MicrosoftIcon from '../../icons/MicrosoftIcon'
 import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../../auth/useAuth'
 import { checkLocalServerHealth } from '@/app/utils/healthCheck'
@@ -35,6 +33,7 @@ const AUTH_PROVIDERS = {
     icon: GoogleIcon,
     variant: 'outline' as const,
   },
+  /*
   microsoft: {
     key: 'microsoft',
     label: 'Microsoft',
@@ -47,6 +46,7 @@ const AUTH_PROVIDERS = {
     icon: AppleIcon,
     variant: 'outline' as const,
   },
+  */
   github: {
     key: 'github',
     label: 'GitHub',
@@ -115,7 +115,7 @@ export default function SignInContent() {
   const { clearAuth } = useAuthStore()
   const { loadNotes } = useNotesStore()
   const { loadEntries } = useDictionaryStore()
-  const { resetOnboarding } = useOnboardingStore()
+
   const [isServerHealthy, setIsServerHealthy] = useState(true)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -127,8 +127,6 @@ export default function SignInContent() {
     user,
     isAuthenticated,
     loginWithGoogle,
-    loginWithMicrosoft,
-    loginWithApple,
     loginWithGitHub,
     loginWithSelfHosted,
     loginWithEmail,
@@ -175,12 +173,14 @@ export default function SignInContent() {
         case 'google':
           await loginWithGoogle(userEmail)
           break
+        /*
         case 'microsoft':
           await loginWithMicrosoft(userEmail)
           break
         case 'apple':
           await loginWithApple(userEmail)
           break
+        */
         case 'github':
           await loginWithGitHub(userEmail)
           break
@@ -243,17 +243,6 @@ export default function SignInContent() {
             onClick={() => handleSocialAuth('google')}
           />
           <AuthButton
-            provider="microsoft"
-            onClick={() => handleSocialAuth('microsoft')}
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <AuthButton
-            provider="apple"
-            onClick={() => handleSocialAuth('apple')}
-          />
-          <AuthButton
             provider="github"
             onClick={() => handleSocialAuth('github')}
           />
@@ -271,7 +260,7 @@ export default function SignInContent() {
         />
         <AuthButton
           provider="google-oauth2"
-          onClick={() => {}}
+          onClick={() => { }}
           className="hidden"
         />
         <Button
@@ -365,10 +354,12 @@ export default function SignInContent() {
       switch (provider) {
         case 'google-oauth2':
           return () => handleSocialAuth('google')
+        /*
         case 'microsoft':
           return () => handleSocialAuth('microsoft')
         case 'apple':
           return () => handleSocialAuth('apple')
+        */
         case 'github':
           return () => handleSocialAuth('github')
         case 'self-hosted':
@@ -448,7 +439,7 @@ export default function SignInContent() {
           {/* Terms and privacy - only show for self-hosted */}
           {(userProvider === 'self-hosted' || !userProvider) && (
             <p className="text-xs text-muted-foreground text-center mt-8 leading-relaxed">
-              Running Ito locally requires additional setup. Please refer to our{' '}
+              Running VibeType locally requires additional setup. Please refer to our{' '}
               <a href="#" className="underline">
                 Github
               </a>{' '}
