@@ -171,8 +171,8 @@ export default function PermissionsContent() {
                 {!isAccessibilityEnabled && (
                   <>
                     <div className="text-sm text-muted-foreground mb-2">
-                      This lets VibeType put your spoken words in the right textbox
-                      and edit text according to your commands
+                      This lets VibeType put your spoken words in the right
+                      textbox and edit text according to your commands
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 mt-1">
@@ -223,7 +223,8 @@ export default function PermissionsContent() {
                 {isAccessibilityEnabled && !isMicrophoneEnabled && (
                   <>
                     <div className="text-sm text-muted-foreground mb-2">
-                      This lets VibeType hear your voice and transcribe your speech
+                      This lets VibeType hear your voice and transcribe your
+                      speech
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 mt-1">
@@ -242,8 +243,8 @@ export default function PermissionsContent() {
                           </TooltipTrigger>
                           <TooltipContent side="right" align="start">
                             <p>
-                              VibeType will show an animation when the mic is active{' '}
-                              <br /> and only listen when you activate it
+                              VibeType will show an animation when the mic is
+                              active <br /> and only listen when you activate it
                             </p>
                           </TooltipContent>
                         </Tooltip>

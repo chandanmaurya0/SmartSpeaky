@@ -37,17 +37,16 @@ const CEREBRAS_MODELS = [
   'llama3.1-8b',
   'llama-3.3-70b',
   'gpt-oss-120b',
-  'qwen-3-32b'
+  'qwen-3-32b',
 ]
 
 const getLlmSettingsConfig = (
-  currentSettings: LlmSettings
+  currentSettings: LlmSettings,
 ): LlmSettingConfig[] => {
   // Determine available models based on selected provider
   // Default to Groq models if no provider is selected or provider is unknown
-  const llmModels = currentSettings.llmProvider === 'cerebras'
-    ? CEREBRAS_MODELS
-    : GROQ_MODELS
+  const llmModels =
+    currentSettings.llmProvider === 'cerebras' ? CEREBRAS_MODELS : GROQ_MODELS
 
   return [
     {
@@ -418,7 +417,8 @@ export default function AdvancedSettingsContent() {
                 Enable Grammar Service
               </span>
               <span className="block text-xs text-slate-500 mt-1">
-                Apply VibeType's local grammar adjustments before inserting text.
+                Apply VibeType's local grammar adjustments before inserting
+                text.
               </span>
             </span>
           </label>
@@ -455,9 +455,10 @@ export default function AdvancedSettingsContent() {
           onClick={handleSave}
           disabled={isSaving || savedSuccess}
           className={`w-1/2 py-2 text-sm font-medium text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200
-            ${savedSuccess
-              ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500'
-              : 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500'
+            ${
+              savedSuccess
+                ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500'
+                : 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500'
             }
             ${isSaving ? 'opacity-75 cursor-wait' : ''}
           `}

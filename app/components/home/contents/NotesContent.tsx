@@ -19,7 +19,8 @@ import { getKeyDisplayInfo } from '@/lib/types/keyboard'
 import { usePlatform } from '@/app/hooks/usePlatform'
 
 export default function NotesContent() {
-  const { notes, loadNotes, addNote, deleteNote, updateNote, isLoading } = useNotesStore()
+  const { notes, loadNotes, addNote, deleteNote, updateNote, isLoading } =
+    useNotesStore()
   const { getItoModeShortcuts } = useSettingsStore()
   const keyboardShortcut = getItoModeShortcuts(ItoMode.TRANSCRIBE)[0].keys
   const [creatingNote, setCreatingNote] = useState(false)
@@ -138,8 +139,8 @@ export default function NotesContent() {
     searchQuery.trim() === ''
       ? notes
       : notes.filter(note =>
-        note.content.toLowerCase().includes(searchQuery.toLowerCase()),
-      )
+          note.content.toLowerCase().includes(searchQuery.toLowerCase()),
+        )
 
   const handleAddNote = async () => {
     if (noteContent.trim() !== '') {
@@ -270,7 +271,7 @@ export default function NotesContent() {
       return () => container.removeEventListener('scroll', handleScroll)
     }
 
-    return () => { }
+    return () => {}
   }, [])
 
   // Handle escape key for closing search
@@ -286,7 +287,7 @@ export default function NotesContent() {
       return () => document.removeEventListener('keydown', handleKeyDown)
     }
 
-    return () => { }
+    return () => {}
   }, [showSearch])
 
   // Handle clicks outside dropdown to close it
@@ -300,7 +301,7 @@ export default function NotesContent() {
       return () => document.removeEventListener('click', handleClickOutside)
     }
 
-    return () => { }
+    return () => {}
   }, [showDropdown])
 
   const scrollToTop = () => {

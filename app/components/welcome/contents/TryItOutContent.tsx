@@ -42,7 +42,9 @@ export default function TryItOut() {
             </div>
             <div>
               <div className="font-medium">Chandan</div>
-              <div className="text-sm">Hey Chandan, is VibeType working for you?</div>
+              <div className="text-sm">
+                Hey Chandan, is VibeType working for you?
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-2 px-4 pb-4 rounded-b-2xl">

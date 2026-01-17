@@ -260,7 +260,7 @@ export default function SignInContent() {
         />
         <AuthButton
           provider="google-oauth2"
-          onClick={() => { }}
+          onClick={() => {}}
           className="hidden"
         />
         <Button
@@ -439,7 +439,8 @@ export default function SignInContent() {
           {/* Terms and privacy - only show for self-hosted */}
           {(userProvider === 'self-hosted' || !userProvider) && (
             <p className="text-xs text-muted-foreground text-center mt-8 leading-relaxed">
-              Running VibeType locally requires additional setup. Please refer to our{' '}
+              Running VibeType locally requires additional setup. Please refer
+              to our{' '}
               <a href="#" className="underline">
                 Github
               </a>{' '}

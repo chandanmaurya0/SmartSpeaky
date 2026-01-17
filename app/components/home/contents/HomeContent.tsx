@@ -29,7 +29,11 @@ import { getKeyDisplay } from '@/app/utils/keyboard'
 import { createStereo48kWavFromMonoPCM } from '@/app/utils/audioUtils'
 import { KeyName } from '@/lib/types/keyboard'
 import { usePlatform } from '@/app/hooks/usePlatform'
-import { calculateAllStats, InteractionStats, Interaction } from '@/app/utils/userMetrics'
+import {
+  calculateAllStats,
+  InteractionStats,
+  Interaction,
+} from '@/app/utils/userMetrics'
 
 const StatCard = ({
   title,
@@ -89,7 +93,8 @@ export default function HomeContent() {
 
   const loadInteractions = useCallback(async () => {
     try {
-      const allRawInteractions = (await window.api.interactions.getAll()) as unknown as InteractionPb[]
+      const allRawInteractions =
+        (await window.api.interactions.getAll()) as unknown as InteractionPb[]
 
       const allInteractions: Interaction[] = allRawInteractions.map(
         (i: InteractionPb) => {
@@ -244,7 +249,8 @@ export default function HomeContent() {
         return {
           text: 'Audio is silent',
           isError: true,
-          tooltip: "VibeType didn't detect any words so the transcript is empty",
+          tooltip:
+            "VibeType didn't detect any words so the transcript is empty",
         }
       }
       return {
@@ -597,10 +603,11 @@ export default function HomeContent() {
                             >
                               <TooltipTrigger asChild>
                                 <button
-                                  className={`p-1.5 hover:bg-gray-200 rounded transition-colors cursor-pointer ${copiedItems.has(interaction.id)
-                                    ? 'text-green-600'
-                                    : 'text-gray-600'
-                                    }`}
+                                  className={`p-1.5 hover:bg-gray-200 rounded transition-colors cursor-pointer ${
+                                    copiedItems.has(interaction.id)
+                                      ? 'text-green-600'
+                                      : 'text-gray-600'
+                                  }`}
                                   onClick={() =>
                                     copyToClipboard(
                                       displayInfo.text,
@@ -662,10 +669,11 @@ export default function HomeContent() {
                           >
                             <TooltipTrigger asChild>
                               <button
-                                className={`p-1.5 hover:bg-gray-200 rounded transition-colors cursor-pointer ${playingAudio === interaction.id
-                                  ? 'bg-blue-50 text-blue-600'
-                                  : 'text-gray-600'
-                                  }`}
+                                className={`p-1.5 hover:bg-gray-200 rounded transition-colors cursor-pointer ${
+                                  playingAudio === interaction.id
+                                    ? 'bg-blue-50 text-blue-600'
+                                    : 'text-gray-600'
+                                }`}
                                 onClick={() => handleAudioPlayStop(interaction)}
                                 disabled={!interaction.raw_audio}
                               >

@@ -20,8 +20,8 @@ export default function AnyAppContent() {
             </button>
             <h1 className="text-3xl mb-4 mt-12">VibeType works in any app.</h1>
             <p className="text-base text-muted-foreground mt-6">
-              From emails to chats to documents—VibeType works in any textbox on your
-              computer.
+              From emails to chats to documents—VibeType works in any textbox on
+              your computer.
             </p>
           </div>
           <div className="flex flex-col items-start mb-8">
