@@ -51,7 +51,7 @@ export function initializeAutoUpdater() {
         provider: 's3',
         bucket,
         path: 'releases/',
-        region: 'us-west-2',
+        region: 'ap-south-1',
       })
 
       log.transports.file.level = 'debug'
