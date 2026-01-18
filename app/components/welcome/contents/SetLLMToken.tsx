@@ -107,7 +107,7 @@ export default function SetLLMToken() {
               variants={itemVariants}
               className="text-muted-foreground mb-10 text-lg"
             >
-              Configure your AI providers to power VibeType's recognition and
+              Configure your AI providers to power SmartSpeaky's recognition and
               reasoning capabilities.
             </motion.p>
 
@@ -278,7 +278,7 @@ export default function SetLLMToken() {
           <div className="text-center max-w-xs space-y-2 opacity-80">
             <h3 className="text-lg font-medium">Bring your own keys</h3>
             <p className="text-sm text-muted-foreground">
-              VibeType connects directly to your AI providers. Your keys remain
+              SmartSpeaky connects directly to your AI providers. Your keys remain
               on your device.
             </p>
           </div>

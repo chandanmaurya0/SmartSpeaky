@@ -116,7 +116,7 @@ export default function DataControlContent() {
               >
                 <div className="flex flex-col gap-0.5">
                   <span className="font-medium text-sm">
-                    Help improve VibeType
+                    Help improve SmartSpeaky
                   </span>
                   <span className="text-xs text-muted-foreground">
                     Share anonymous usage data to help us build better models.

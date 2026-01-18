@@ -43,7 +43,7 @@ export default function TryItOut() {
             <div>
               <div className="font-medium">Chandan</div>
               <div className="text-sm">
-                Hey Chandan, is VibeType working for you?
+                Hey Chandan, is SmartSpeaky working for you?
               </div>
             </div>
           </div>
@@ -210,7 +210,7 @@ export default function TryItOut() {
               &lt; Back
             </button>
             <h1 className="text-3xl mb-4 mt-12">
-              Use VibeType with the keyboard shortcut.
+              Use SmartSpeaky with the keyboard shortcut.
             </h1>
             <p className="text-base text-muted-foreground mt-6">
               Hold down on the{' '}

@@ -417,7 +417,7 @@ export default function AdvancedSettingsContent() {
                 Enable Grammar Service
               </span>
               <span className="block text-xs text-slate-500 mt-1">
-                Apply VibeType's local grammar adjustments before inserting
+                Apply SmartSpeaky's local grammar adjustments before inserting
                 text.
               </span>
             </span>

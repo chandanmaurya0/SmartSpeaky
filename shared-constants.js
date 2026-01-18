@@ -1,5 +1,5 @@
 /**
- * Shared constants for default advanced settings across the Ito monorepo.
+ * Shared constants for default advanced settings across the SmartSpeaky monorepo.
  * This file is used by both the Electron app and the server to ensure consistency.
  */
 

@@ -48,7 +48,7 @@ export default function HomeKit() {
       // When collapsing: hide text immediately, then center icons after slide completes
       setShowText(false)
       // Return no-op function
-      return () => {}
+      return () => { }
     }
   }, [navExpanded])
 
@@ -80,13 +80,13 @@ export default function HomeKit() {
           {/* Logo and Plan */}
           <div className="flex items-center mb-10 px-3">
             <ItoIcon
-              className="w-6 text-gray-900 flex-shrink-0"
-              style={{ height: '32px' }}
+              className="w-5 text-gray-900 flex-shrink-0"
+              style={{ height: '26px' }}
             />
             <span
-              className={`text-2xl font-bold transition-opacity duration-100 ${showText ? 'opacity-100' : 'opacity-0'} ${showText ? 'ml-2' : 'w-0 overflow-hidden'}`}
+              className={`text-xl font-bold transition-opacity duration-100 ${showText ? 'opacity-100' : 'opacity-0'} ${showText ? 'ml-1' : 'w-0 overflow-hidden'}`}
             >
-              VibeType
+              SmartSpeaky
             </span>
           </div>
           {/* Nav */}

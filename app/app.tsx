@@ -70,7 +70,7 @@ export default function App() {
             element={
               <>
                 <WindowContextProvider
-                  titlebar={{ title: 'VibeType', icon: appIcon }}
+                  titlebar={{ title: 'SmartSpeaky', icon: appIcon }}
                 >
                   <MainApp />
                 </WindowContextProvider>

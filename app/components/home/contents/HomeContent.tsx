@@ -250,7 +250,7 @@ export default function HomeContent() {
           text: 'Audio is silent',
           isError: true,
           tooltip:
-            "VibeType didn't detect any words so the transcript is empty",
+            "SmartSpeaky didn't detect any words so the transcript is empty",
         }
       }
       return {
@@ -267,7 +267,7 @@ export default function HomeContent() {
       return {
         text: 'Audio is silent.',
         isError: true,
-        tooltip: "VibeType didn't detect any words so the transcript is empty",
+        tooltip: "SmartSpeaky didn't detect any words so the transcript is empty",
       }
     }
 

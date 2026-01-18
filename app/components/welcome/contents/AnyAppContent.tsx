@@ -18,9 +18,9 @@ export default function AnyAppContent() {
             >
               &lt; Back
             </button>
-            <h1 className="text-3xl mb-4 mt-12">VibeType works in any app.</h1>
+            <h1 className="text-3xl mb-4 mt-12">SmartSpeaky works in any app.</h1>
             <p className="text-base text-muted-foreground mt-6">
-              From emails to chats to documents—VibeType works in any textbox on
+              From emails to chats to documents—SmartSpeaky works in any textbox on
               your computer.
             </p>
           </div>
