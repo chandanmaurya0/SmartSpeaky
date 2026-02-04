@@ -19,7 +19,7 @@ import { DEFAULT_ADVANCED_SETTINGS } from '../constants/generated-defaults.js'
 
 // Load environment variables from .env file
 dotenv.config()
-export const itoVocabulary = ['Ito', 'Hey Ito']
+export const itoVocabulary = ['SmartSpeaky', 'Hey SmartSpeaky']
 
 /**
  * A TypeScript client for interacting with the Groq API, inspired by your Python implementation.
@@ -52,7 +52,10 @@ class GroqClient implements LlmProvider {
    * @param userCommandModel Optional model to use for user commands
    * @returns A new GroqClient instance
    */
-  public static createInstance(apiKey: string, userCommandModel: string = ''): GroqClient {
+  public static createInstance(
+    apiKey: string,
+    userCommandModel: string = '',
+  ): GroqClient {
     return new GroqClient(apiKey, userCommandModel)
   }
 
@@ -194,7 +197,9 @@ const apiKey = process.env.GROQ_API_KEY || ''
 
 // Note: userCommandModel is empty for now as we are only using transcription.
 // This singleton is kept for backward compatibility but may not be available if no env key is set
-export const groqClient = apiKey ? new GroqClient(apiKey, '') : ({
-  isAvailable: false,
-  createInstance: GroqClient.createInstance,
-} as any)
+export const groqClient = apiKey
+  ? new GroqClient(apiKey, '')
+  : ({
+      isAvailable: false,
+      createInstance: GroqClient.createInstance,
+    } as any)
