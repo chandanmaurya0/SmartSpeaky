@@ -1,6 +1,6 @@
 {
-  "name": "ito-server",
-  "version": "1.0.0",
+  "name": "smartspeaky-server",
+  "version": "0.0.3",
   "main": "dist/index.js",
   "type": "module",
   "license": "GPL-3.0-only",
