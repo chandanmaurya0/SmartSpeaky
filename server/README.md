@@ -248,10 +248,10 @@ Authentication is optional for local development. When enabled:
 docker compose up -d
 
 # Build only backend server image
-docker build --platform linux/amd64 -t ito-backend-server .
+docker build --platform linux/amd64 -t smartspeaky-backend-server .
 
 # Run migrations
-docker compose exec ito-grpc-server bun run db:migrate
+docker compose exec smartspeaky-grpc-server bun run db:migrate
 ```
 
 ### AWS Deployment
