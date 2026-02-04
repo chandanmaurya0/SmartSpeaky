@@ -34,7 +34,7 @@ import {
 import { ConnectError, Code } from '@connectrpc/connect'
 import { kUser } from '../../auth/userContext.js'
 import { transcribeStreamV2Handler } from './transcribeStreamV2Handler.js'
-import { transcribeStreamHandler } from './transcribeStreamHandler.js'
+
 import { DEFAULT_ADVANCED_SETTINGS_STRUCT } from './constants.js'
 
 function dbToNotePb(dbNote: DbNote): Note {
@@ -135,16 +135,6 @@ export default (router: ConnectRouter) => {
       return transcribeStreamV2Handler.process(requests, context)
     },
 
-    /**
-     * @deprecated Legacy endpoint maintained for backwards compatibility.
-     * New clients should use transcribeStreamV2.
-     */
-    async transcribeStream(
-      requests: AsyncIterable<AudioChunk>,
-      context: HandlerContext,
-    ) {
-      return transcribeStreamHandler.process(requests, context)
-    },
     async createNote(request, context: HandlerContext) {
       const user = context.values.get(kUser)
       const userId = user?.sub

@@ -1,5 +1,5 @@
 import { performance } from 'perf_hooks'
-import { S3StorageClient } from '../../clients/s3storageClient.js'
+import { InteractionTimingsRepository } from '../../db/repo.js'
 
 /**
  * Enum for server-side timing events in the transcription pipeline
@@ -10,22 +10,6 @@ export enum ServerTimingEventName {
   ASR_TRANSCRIPTION = 'server_asr_transcription',
   LLM_ADJUSTMENT = 'server_llm_adjustment',
   TOTAL_PROCESSING = 'server_total_processing',
-}
-
-// Configuration for S3
-const TIMING_BUCKET = process.env.TIMING_BUCKET
-
-// Initialize storage client for timing bucket
-let timingStorageClient: S3StorageClient | null = null
-if (TIMING_BUCKET) {
-  try {
-    timingStorageClient = new S3StorageClient(TIMING_BUCKET)
-  } catch (error) {
-    console.error(
-      '[ServerTimingCollector] Failed to initialize timing storage client:',
-      error,
-    )
-  }
 }
 
 interface TimingEvent {
@@ -220,79 +204,47 @@ export class ServerTimingCollector {
       return
     }
 
-    if (!timingStorageClient) {
-      console.warn(
-        '[ServerTimingCollector] No timing storage client configured, skipping flush',
-      )
-      this.completedReports = [] // Clear reports to avoid memory leak
-      return
-    }
-
     const reportsToSend = this.completedReports.splice(
       0,
       flushAll ? this.completedReports.length : this.BATCH_SIZE,
     )
 
     console.log(
-      `[ServerTimingCollector] Flushing ${reportsToSend.length} timing reports to S3`,
+      `[ServerTimingCollector] Flushing ${reportsToSend.length} timing reports to DB`,
     )
 
-    // Upload each report to S3
-    const uploadPromises = reportsToSend.map(async report => {
-      const timingData = {
-        source: 'server',
-        interactionId: report.interactionId,
-        userId: report.userId,
-        timestamp: new Date().toISOString(),
-        events: report.events.map(event => ({
-          name: event.name,
-          startMs: event.startMs,
-          endMs: event.endMs,
-          durationMs: event.durationMs,
-        })),
+    // Flatten reports into timing rows
+    const allTimings: {
+      interactionId: string
+      userId: string
+      eventName: string
+      durationMs: number
+    }[] = []
+
+    for (const report of reportsToSend) {
+      for (const event of report.events) {
+        allTimings.push({
+          interactionId: report.interactionId,
+          userId: report.userId || 'unknown',
+          eventName: event.name,
+          durationMs: event.durationMs || 0,
+        })
       }
-
-      // S3 key pattern: server/{interaction-id}/{timestamp}.json
-      const key = `server/${report.interactionId}/${Date.now()}.json`
-
-      try {
-        await timingStorageClient.uploadObject(
-          key,
-          JSON.stringify(timingData),
-          'application/json',
-        )
-        console.log(
-          `[ServerTimingCollector] Uploaded server timing to S3: ${key}`,
-        )
-      } catch (error) {
-        console.error(
-          `[ServerTimingCollector] Failed to upload timing to S3: ${key}`,
-          error,
-        )
-        throw error // Will be caught by Promise.allSettled below
-      }
-    })
-
-    // Wait for all uploads, but don't fail if some fail
-    const results = await Promise.allSettled(uploadPromises)
-
-    const successCount = results.filter(r => r.status === 'fulfilled').length
-    const failCount = results.filter(r => r.status === 'rejected').length
-
-    if (failCount > 0) {
-      console.error(
-        `[ServerTimingCollector] Failed to upload ${failCount}/${reportsToSend.length} reports`,
-      )
-      // Re-add failed reports to the front of the queue for retry
-      const failedReports = reportsToSend.filter(
-        (_, i) => results[i].status === 'rejected',
-      )
-      this.completedReports.unshift(...failedReports)
     }
 
-    console.log(
-      `[ServerTimingCollector] Successfully submitted ${successCount}/${reportsToSend.length} reports`,
-    )
+    try {
+      await InteractionTimingsRepository.createMany(allTimings)
+      console.log(
+        `[ServerTimingCollector] Successfully saved ${allTimings.length} timing records for ${reportsToSend.length} interactions`,
+      )
+    } catch (error) {
+      console.error(
+        '[ServerTimingCollector] Failed to save timings to DB:',
+        error,
+      )
+      // Re-add failed reports to the front of the queue for retry
+      this.completedReports.unshift(...reportsToSend)
+    }
   }
 
   /**

@@ -61,3 +61,12 @@ export interface AdvancedSettings {
   created_at: Date
   updated_at: Date
 }
+
+export interface InteractionTiming {
+  id: string
+  interaction_id: string
+  user_id: string
+  event_name: string
+  duration_ms: number
+  created_at: Date
+}
