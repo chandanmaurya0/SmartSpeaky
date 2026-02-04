@@ -27,31 +27,7 @@ export async function createInteractionWithAudio(
 
   let rawAudioId: string | undefined
 
-  // If raw audio is provided, upload to S3
-  if (rawAudio && rawAudio.length > 0) {
-    try {
-      const storageClient = getStorageClient()
-      rawAudioId = uuidv4()
-      const audioKey = createAudioKey(userId, rawAudioId)
-
-      await storageClient.uploadObject(
-        audioKey,
-        rawAudio,
-        undefined, // ContentType
-        {
-          userId,
-          interactionId: id,
-          timestamp: new Date().toISOString(),
-        },
-      )
-
-      console.log(
-        `✅ [${new Date().toISOString()}] Uploaded audio to S3: ${audioKey}`,
-      )
-    } catch (error) {
-      console.error('Failed to upload raw audio to S3:', error)
-    }
-  }
+  // Audio upload logic removed as per requirements
 
   // Create interaction in database
   const interaction = await InteractionsRepository.create({
