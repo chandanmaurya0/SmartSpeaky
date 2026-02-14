@@ -15,8 +15,8 @@ export default function KeyboardSettingsContent() {
             <div className="w-1/3">
               <div className="text-sm font-medium mb-2">Keyboard Shortcut</div>
               <div className="text-xs text-gray-600 mb-4">
-                Set the keyboard shortcut to activate SmartSpeaky. Press the keys
-                you want to use for your shortcut.
+                Set the keyboard shortcut to activate SmartSpeaky. Press the
+                keys you want to use for your shortcut.
               </div>
             </div>
             <MultiShortcutEditor
@@ -31,8 +31,8 @@ export default function KeyboardSettingsContent() {
               </div>
               <div className="text-xs text-gray-600 mb-4">
                 Set the shortcut to activate Intelligent Mode. Press your
-                hotkey, speak to SmartSpeaky, and the LLM's output is pasted into
-                your text box.
+                hotkey, speak to SmartSpeaky, and the LLM's output is pasted
+                into your text box.
               </div>
             </div>
             <MultiShortcutEditor

@@ -122,7 +122,7 @@ export default function CreateAccountContent() {
       <EmailLoginContent
         initialEmail={email}
         onBack={() => setShowEmailLogin(false)}
-        onContinue={() => { }}
+        onContinue={() => {}}
       />
     )
   }
@@ -213,8 +213,9 @@ export default function CreateAccountContent() {
             aria-describedby={
               emailTouched && !emailOk ? 'signup-email-error' : undefined
             }
-            className={`w-full h-12 px-3 rounded-md border bg-background text-foreground placeholder:text-muted-foreground ${emailTouched && !emailOk ? 'border-destructive' : 'border-border'
-              }`}
+            className={`w-full h-12 px-3 rounded-md border bg-background text-foreground placeholder:text-muted-foreground ${
+              emailTouched && !emailOk ? 'border-destructive' : 'border-border'
+            }`}
           />
           {emailTouched && !emailOk && (
             <p id="signup-email-error" className="text-xs text-destructive">
@@ -233,7 +234,6 @@ export default function CreateAccountContent() {
             <p className="text-xs text-destructive">{checkError}</p>
           )}
         </div>
-
       </div>
     </div>
   )

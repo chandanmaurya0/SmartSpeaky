@@ -1,10 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import {
-  ChartNoAxesColumn,
-  InfoCircle,
-  Copy,
-  Check,
-} from '@mynaui/icons-react'
+import { ChartNoAxesColumn, InfoCircle, Copy, Check } from '@mynaui/icons-react'
 import { EXTERNAL_LINKS } from '@/lib/constants/external-links'
 import { useSettingsStore } from '../../../store/useSettingsStore'
 import { Tooltip, TooltipTrigger, TooltipContent } from '../../ui/tooltip'
@@ -158,8 +153,6 @@ export default function HomeContent() {
     return unsubscribe
   }, [loadInteractions])
 
-
-
   const formatTime = (dateString: string) => {
     const date = new Date(dateString)
     return date.toLocaleString('en-US', {
@@ -242,7 +235,8 @@ export default function HomeContent() {
       return {
         text: 'Audio is silent.',
         isError: true,
-        tooltip: "SmartSpeaky didn't detect any words so the transcript is empty",
+        tooltip:
+          "SmartSpeaky didn't detect any words so the transcript is empty",
       }
     }
 
@@ -253,8 +247,6 @@ export default function HomeContent() {
       tooltip: null,
     }
   }
-
-
 
   const groupedInteractions = groupInteractionsByDate(interactions)
 
@@ -280,8 +272,6 @@ export default function HomeContent() {
       console.error('Failed to copy text:', error)
     }
   }
-
-
 
   return (
     <div className="w-full h-full flex flex-col">
@@ -453,10 +443,11 @@ export default function HomeContent() {
                             >
                               <TooltipTrigger asChild>
                                 <button
-                                  className={`p-1.5 hover:bg-gray-200 rounded transition-colors cursor-pointer ${copiedItems.has(interaction.id)
-                                    ? 'text-green-600'
-                                    : 'text-gray-600'
-                                    }`}
+                                  className={`p-1.5 hover:bg-gray-200 rounded transition-colors cursor-pointer ${
+                                    copiedItems.has(interaction.id)
+                                      ? 'text-green-600'
+                                      : 'text-gray-600'
+                                  }`}
                                   onClick={() =>
                                     copyToClipboard(
                                       displayInfo.text,

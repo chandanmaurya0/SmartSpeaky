@@ -8,11 +8,8 @@ import { motion } from 'framer-motion'
 import { Trash, ShieldCheck } from '@mynaui/icons-react'
 
 export default function DataControlContent() {
-  const {
-    incrementOnboardingStep,
-    decrementOnboardingStep,
-    onboardingStep,
-  } = useOnboardingStore()
+  const { incrementOnboardingStep, decrementOnboardingStep, onboardingStep } =
+    useOnboardingStore()
   const { clearAuth } = useAuthStore()
   const { shareAnalytics, setShareAnalytics } = useSettingsStore()
 
@@ -90,7 +87,9 @@ export default function DataControlContent() {
                   <Trash size={22} />
                 </div>
                 <div>
-                  <h3 className="font-medium text-base mb-0.5">Instant Deletion</h3>
+                  <h3 className="font-medium text-base mb-0.5">
+                    Instant Deletion
+                  </h3>
                   <p className="text-sm text-muted-foreground leading-snug">
                     One-click account and data removal. All records are
                     permanently purged from our systems immediately.
@@ -101,10 +100,11 @@ export default function DataControlContent() {
 
             <motion.div variants={itemVariants} className="flex flex-col gap-3">
               <div
-                className={`group flex items-center justify-between p-3.5 rounded-xl border-2 cursor-pointer transition-all duration-200 ${shareAnalytics
-                  ? 'border-primary bg-primary/5 shadow-sm'
-                  : 'border-border hover:border-muted-foreground/30 bg-background'
-                  }`}
+                className={`group flex items-center justify-between p-3.5 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
+                  shareAnalytics
+                    ? 'border-primary bg-primary/5 shadow-sm'
+                    : 'border-border hover:border-muted-foreground/30 bg-background'
+                }`}
                 onClick={() => setShareAnalytics(true)}
               >
                 <div className="flex flex-col gap-0.5">
@@ -116,10 +116,11 @@ export default function DataControlContent() {
                   </span>
                 </div>
                 <div
-                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${shareAnalytics
-                    ? 'bg-primary border-primary'
-                    : 'border-muted-foreground/30'
-                    }`}
+                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+                    shareAnalytics
+                      ? 'bg-primary border-primary'
+                      : 'border-muted-foreground/30'
+                  }`}
                 >
                   {shareAnalytics && (
                     <div className="w-2 h-2 rounded-full bg-white" />
@@ -128,10 +129,11 @@ export default function DataControlContent() {
               </div>
 
               <div
-                className={`group flex items-center justify-between p-3.5 rounded-xl border-2 cursor-pointer transition-all duration-200 ${!shareAnalytics
-                  ? 'border-primary bg-primary/5 shadow-sm'
-                  : 'border-border hover:border-muted-foreground/30 bg-background'
-                  }`}
+                className={`group flex items-center justify-between p-3.5 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
+                  !shareAnalytics
+                    ? 'border-primary bg-primary/5 shadow-sm'
+                    : 'border-border hover:border-muted-foreground/30 bg-background'
+                }`}
                 onClick={() => setShareAnalytics(false)}
               >
                 <div className="flex flex-col gap-0.5">
@@ -141,10 +143,11 @@ export default function DataControlContent() {
                   </span>
                 </div>
                 <div
-                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${!shareAnalytics
-                    ? 'bg-primary border-primary'
-                    : 'border-muted-foreground/30'
-                    }`}
+                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+                    !shareAnalytics
+                      ? 'bg-primary border-primary'
+                      : 'border-muted-foreground/30'
+                  }`}
                 >
                   {!shareAnalytics && (
                     <div className="w-2 h-2 rounded-full bg-white" />

@@ -22,6 +22,7 @@ cp .env.example .env
 ```
 
 **Required Variables:**
+
 - ✅ `PORT` - Server port (default: 3000)
 - ✅ `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASS`, `DB_NAME` - PostgreSQL config
 - ✅ `GROQ_API_KEY` - For AI transcription
@@ -29,6 +30,7 @@ cp .env.example .env
 - ✅ `S3_ENDPOINT`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY` - S3/MinIO config
 
 **Optional Variables:**
+
 - `REQUIRE_AUTH` - Enable Auth0 (default: false)
 - `AUTH0_DOMAIN`, `AUTH0_AUDIENCE` - Auth0 config (if auth enabled)
 - `CEREBRAS_API_KEY` - Alternative AI provider
@@ -36,6 +38,7 @@ cp .env.example .env
 ### 2. Database Migrations
 
 Ensure all migrations are ready:
+
 ```bash
 # Check migrations directory
 ls -la src/migrations/
@@ -48,6 +51,7 @@ bun run db:migrate
 ### 3. Protocol Buffer Files
 
 Ensure proto files are present:
+
 ```bash
 # Check proto file exists
 ls -la src/ito.proto
@@ -108,24 +112,28 @@ The Docker image includes:
 Your `docker-compose.yml` includes:
 
 ### 1. **ito-grpc-server** (Main Application)
+
 - Runs the Ito backend server
 - Exposes port 3000
 - Depends on PostgreSQL and MinIO
 - Auto-restarts on failure
 
 ### 2. **db** (PostgreSQL Database)
+
 - PostgreSQL 16
 - Persistent volume for data
 - Exposed on port 5432
 - Auto-configured from `.env`
 
 ### 3. **minio** (S3-Compatible Storage)
+
 - MinIO server for audio storage
 - API on port 9000
 - Console on port 9001
 - Persistent volume for files
 
 ### 4. **createbuckets** (Initialization)
+
 - One-time setup container
 - Creates required S3 buckets
 - Sets bucket permissions
@@ -134,11 +142,13 @@ Your `docker-compose.yml` includes:
 ## 🔍 Verifying the Deployment
 
 ### 1. Check Container Status
+
 ```bash
 docker compose ps
 ```
 
 Expected output:
+
 ```
 NAME              STATUS    PORTS
 ito-server        Up        0.0.0.0:3000->3000/tcp
@@ -147,6 +157,7 @@ ito-minio         Up        0.0.0.0:9000-9001->9000-9001/tcp
 ```
 
 ### 2. Test Health Endpoint
+
 ```bash
 curl http://localhost:3000/
 ```
@@ -154,6 +165,7 @@ curl http://localhost:3000/
 Expected: `Welcome to the Ito Connect RPC server!`
 
 ### 3. Check Logs
+
 ```bash
 # Server logs
 docker compose logs -f ito-grpc-server
@@ -166,48 +178,58 @@ docker compose logs -f minio
 ```
 
 ### 4. Verify Database Connection
+
 ```bash
 docker compose exec ito-grpc-server bun run db:migrate
 ```
 
 ### 5. Access MinIO Console
+
 Open http://localhost:9001 in browser:
+
 - Username: `minioadmin` (or your `S3_ACCESS_KEY_ID`)
 - Password: `minioadmin` (or your `S3_SECRET_ACCESS_KEY`)
 
 ## 🛠️ Common Operations
 
 ### Start Services
+
 ```bash
 docker compose up -d
 ```
 
 ### Stop Services
+
 ```bash
 docker compose down
 ```
 
 ### Restart Server Only
+
 ```bash
 docker compose restart ito-grpc-server
 ```
 
 ### View Real-time Logs
+
 ```bash
 docker compose logs -f
 ```
 
 ### Run Migrations
+
 ```bash
 docker compose exec ito-grpc-server bun run db:migrate
 ```
 
 ### Access Server Shell
+
 ```bash
 docker compose exec ito-grpc-server sh
 ```
 
 ### Rebuild After Code Changes
+
 ```bash
 docker compose up --build -d ito-grpc-server
 ```
@@ -217,6 +239,7 @@ docker compose up --build -d ito-grpc-server
 ### Issue: Build Fails with TypeScript Errors
 
 **Solution**: Fix TypeScript errors before building:
+
 ```bash
 # Check for errors
 bun run build
@@ -229,6 +252,7 @@ docker compose up --build
 ### Issue: Database Connection Failed
 
 **Solution**: Ensure database is ready:
+
 ```bash
 # Check database status
 docker compose ps db
@@ -243,6 +267,7 @@ docker compose exec ito-grpc-server env | grep DB_
 ### Issue: MinIO Bucket Not Created
 
 **Solution**: Check bucket creation logs:
+
 ```bash
 # View createbuckets logs
 docker compose logs createbuckets
@@ -254,6 +279,7 @@ docker compose exec minio mc mb /data/ito-blob-storage
 ### Issue: Proto Generation Fails
 
 **Solution**: Generate proto files locally first:
+
 ```bash
 # Install dependencies
 bun install
@@ -268,6 +294,7 @@ docker compose up --build
 ### Issue: Port Already in Use
 
 **Solution**: Change ports in `.env`:
+
 ```bash
 # Edit .env
 PORT=3001
@@ -348,16 +375,19 @@ services:
 ## 📊 Monitoring
 
 ### View Resource Usage
+
 ```bash
 docker stats ito-server
 ```
 
 ### Export Logs
+
 ```bash
 docker compose logs --since 1h > server-logs.txt
 ```
 
 ### Database Backup
+
 ```bash
 docker compose exec db pg_dump -U devuser devdb > backup.sql
 ```

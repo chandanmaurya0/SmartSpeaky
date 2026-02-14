@@ -220,7 +220,6 @@ export default function SignInContent() {
           Continue with Email
         </Button>
       </div>
-
     </>
   )
 

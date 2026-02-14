@@ -86,7 +86,11 @@ export default function SetLLMToken() {
     }
 
     hydrateAdvancedSettings()
-  }, [setLlmSettings, setGrammarServiceEnabled, setMacosAccessibilityContextEnabled])
+  }, [
+    setLlmSettings,
+    setGrammarServiceEnabled,
+    setMacosAccessibilityContextEnabled,
+  ])
 
   // Update store when local state changes
   useEffect(() => {
@@ -331,8 +335,8 @@ export default function SetLLMToken() {
           <div className="text-center max-w-xs space-y-2 opacity-80">
             <h3 className="text-lg font-medium">Bring your own keys</h3>
             <p className="text-sm text-muted-foreground">
-              SmartSpeaky connects directly to your AI providers. Your keys remain
-              on your device.
+              SmartSpeaky connects directly to your AI providers. Your keys
+              remain on your device.
             </p>
           </div>
         </motion.div>
