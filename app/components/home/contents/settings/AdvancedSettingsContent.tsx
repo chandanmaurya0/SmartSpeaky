@@ -294,8 +294,8 @@ export default function AdvancedSettingsContent() {
             continue
           }
 
-          // @ts-ignore
-          resolvedLlm[key] = defaults[key]
+          const defaultValue = defaults[key] as LlmSettings[typeof key]
+          resolvedLlm[key] = defaultValue
         }
       }
     }
@@ -339,7 +339,7 @@ export default function AdvancedSettingsContent() {
 
       setLlmSettings({ [config.name]: newValue })
     },
-    [llm, setLlmSettings],
+    [setLlmSettings],
   )
 
   const handleGrammarServiceToggle = useCallback(

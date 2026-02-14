@@ -5,7 +5,6 @@ import {
   DictionaryItem,
   LlmSettings,
   AdvancedSettings,
-  InteractionTiming,
 } from './models.js'
 import {
   CreateNoteRequest,

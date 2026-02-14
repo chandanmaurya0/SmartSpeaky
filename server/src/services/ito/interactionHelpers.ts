@@ -1,6 +1,3 @@
-import { v4 as uuidv4 } from 'uuid'
-import { getStorageClient } from '../../clients/s3storageClient.js'
-import { createAudioKey } from '../../constants/storage.js'
 import { InteractionsRepository } from '../../db/repo.js'
 import type { Interaction } from '../../db/models.js'
 
@@ -22,7 +19,7 @@ export interface CreateInteractionParams {
 export async function createInteractionWithAudio(
   params: CreateInteractionParams,
 ): Promise<Interaction> {
-  const { id, userId, title, asrOutput, llmOutput, durationMs, rawAudio } =
+  const { id, userId, title, asrOutput, llmOutput, durationMs } =
     params
 
   let rawAudioId: string | undefined

@@ -186,7 +186,7 @@ export const getAdvancedSettings = (): AdvancedSettings => {
 }
 
 // Lightweight store-like interface used for migrations and defaults logic
-type StoreLike<T = any> = {
+type StoreLike = {
   get: (path: string) => any
   set: (path: string, value: any) => void
 }

@@ -2,7 +2,6 @@ import { AdvancedSettingsRepository } from '../../db/repo.js'
 import { redisService } from '../../db/redis.js'
 import { AdvancedSettings } from '../../db/models.js'
 import { UpdateAdvancedSettingsRequest } from '../../generated/ito_pb.js'
-import { DEFAULT_ADVANCED_SETTINGS } from '../../constants/generated-defaults.js'
 
 const SETTINGS_CACHE_TTL = 24 * 60 * 60 // 24 hours in seconds
 

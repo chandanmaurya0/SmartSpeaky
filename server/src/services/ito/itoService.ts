@@ -1,6 +1,5 @@
 import type { ConnectRouter } from '@connectrpc/connect'
 import {
-  AudioChunk,
   ItoService as ItoServiceDesc,
   Note,
   NoteSchema,
@@ -16,7 +15,6 @@ import {
 import { create } from '@bufbuild/protobuf'
 import type { HandlerContext } from '@connectrpc/connect'
 import { getStorageClient } from '../../clients/s3storageClient.js'
-import { createAudioKey } from '../../constants/storage.js'
 import { createInteractionWithAudio } from './interactionHelpers.js'
 import {
   DictionaryRepository,

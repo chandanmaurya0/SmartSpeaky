@@ -7,7 +7,6 @@ import {
   DictionaryItem as DictionaryItemPb,
   AdvancedSettings as AdvancedSettingsPb,
   TimingReport,
-  TimingEvent,
   CreateNoteRequestSchema,
   UpdateNoteRequestSchema,
   DeleteNoteRequestSchema,
@@ -24,8 +23,6 @@ import {
   GetAdvancedSettingsRequestSchema,
   UpdateAdvancedSettingsRequestSchema,
   SubmitTimingReportsRequestSchema,
-  TimingReportSchema,
-  TimingEventSchema,
   ItoMode,
   TranscribeStreamRequest,
 } from '@/app/generated/ito_pb'
@@ -40,13 +37,11 @@ import {
   AdvancedSettings,
   getAdvancedSettings,
   getCurrentUserId,
-  store,
 } from '../main/store'
 import { getSelectedTextString } from '../media/selected-text-reader'
 import { ensureValidTokens } from '../auth/events'
 import { Auth0Config } from '../auth/config'
 import { getActiveWindow } from '../media/active-application'
-import { STORE_KEYS } from '../constants/store-keys.js'
 
 class GrpcClient {
   private client: ReturnType<typeof createClient<typeof ItoService>>

@@ -15,7 +15,7 @@ export function getAsrProvider(
   apiKey?: string,
 ): LlmProvider {
   switch (providerName) {
-    case ClientProvider.GROQ:
+    case ClientProvider.GROQ: {
       // Use provided API key or fall back to environment variable
       // Treat empty strings as undefined to properly fall back
       const userProvidedKey =
@@ -43,8 +43,9 @@ export function getAsrProvider(
 
       // Create a new client instance with the provided API key
       return GroqClient.createInstance(groqApiKey)
+    }
 
-    case ClientProvider.CEREBRAS:
+    case ClientProvider.CEREBRAS: {
       // Use provided API key or fall back to environment variable
       const cerebrasUserKey =
         apiKey && apiKey.trim() !== '' ? apiKey : undefined
@@ -75,6 +76,7 @@ export function getAsrProvider(
       }
 
       return CerebrasClient.createInstance(cerebrasApiKey)
+    }
 
     default:
       throw new ClientUnavailableError(providerName as ClientProvider)
@@ -91,7 +93,7 @@ export function getLlmProvider(
   apiKey?: string,
 ): LlmProvider {
   switch (providerName) {
-    case ClientProvider.GROQ:
+    case ClientProvider.GROQ: {
       // Use provided API key or fall back to environment variable
       const userProvidedKey =
         apiKey && apiKey.trim() !== '' ? apiKey : undefined
@@ -113,8 +115,9 @@ export function getLlmProvider(
         throw new ClientUnavailableError(ClientProvider.GROQ)
       }
       return GroqClient.createInstance(groqApiKey)
+    }
 
-    case ClientProvider.CEREBRAS:
+    case ClientProvider.CEREBRAS: {
       // Use provided API key or fall back to environment variable
       const cerebrasUserKey =
         apiKey && apiKey.trim() !== '' ? apiKey : undefined
@@ -141,6 +144,7 @@ export function getLlmProvider(
         throw new ClientUnavailableError(ClientProvider.CEREBRAS)
       }
       return CerebrasClient.createInstance(cerebrasApiKey)
+    }
 
     default:
       throw new ClientUnavailableError(providerName as ClientProvider)

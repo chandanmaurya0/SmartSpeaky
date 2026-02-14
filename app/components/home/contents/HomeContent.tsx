@@ -91,7 +91,7 @@ export default function HomeContent() {
               typeof i.asrOutput === 'string'
                 ? JSON.parse(i.asrOutput)
                 : i.asrOutput
-          } catch (e) {
+          } catch {
             /* ignore */
           }
 
@@ -101,7 +101,7 @@ export default function HomeContent() {
               typeof i.llmOutput === 'string'
                 ? JSON.parse(i.llmOutput)
                 : i.llmOutput
-          } catch (e) {
+          } catch {
             /* ignore */
           }
 
