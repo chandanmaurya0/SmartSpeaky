@@ -175,6 +175,9 @@ const api = {
   updateAdvancedSettings: (advancedSettings: AdvancedSettings) => {
     return ipcRenderer.invoke('update-advanced-settings', advancedSettings)
   },
+  getAdvancedSettings: () => {
+    return ipcRenderer.invoke('get-advanced-settings')
+  },
 
   // Check if the local server is healthy and accessible
   checkServerHealth: () => {
