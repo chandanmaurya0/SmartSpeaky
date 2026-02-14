@@ -33,15 +33,6 @@ mock.module('../clients/grpcClient', () => ({
   grpcClient: mockGrpcClient,
 }))
 
-// Mock sync service
-const mockSyncService = {
-  start: mock(),
-  stop: mock(),
-}
-mock.module('../main/syncService', () => ({
-  syncService: mockSyncService,
-}))
-
 // Mock main window for notifications
 const mockMainWindow = {
   isDestroyed: mock().mockReturnValue(false),
@@ -74,8 +65,6 @@ describe('Authentication Events', () => {
     mockStore.set.mockClear()
     mockStore.delete.mockClear()
     mockGrpcClient.setAuthToken.mockClear()
-    mockSyncService.start.mockClear()
-    mockSyncService.stop.mockClear()
     mockMainWindow.isDestroyed.mockClear()
     mockMainWindow.webContents.send.mockClear()
     mockFetch.mockClear()
@@ -309,9 +298,8 @@ describe('Authentication Events', () => {
         expect.anything(),
       )
 
-      // Should not set auth token without access token, but should start sync (for self-hosted users)
+      // Should not set auth token without access token
       expect(mockGrpcClient.setAuthToken).not.toHaveBeenCalled()
-      expect(mockSyncService.start).toHaveBeenCalled()
     })
 
     test('should only store access token when ID token is null', () => {
@@ -326,9 +314,8 @@ describe('Authentication Events', () => {
       )
       expect(mockStore.set).toHaveBeenCalledWith('accessToken', accessToken)
 
-      // Should start services with access token
+      // Should set gRPC auth when access token exists
       expect(mockGrpcClient.setAuthToken).toHaveBeenCalledWith(accessToken)
-      expect(mockSyncService.start).toHaveBeenCalled()
     })
 
     test('should setup services only when access token is present', () => {
@@ -336,18 +323,15 @@ describe('Authentication Events', () => {
 
       handleLogin(testProfile, 'id-token', accessToken)
 
-      // Services should be configured with access token
+      // Services should configure gRPC auth with access token
       expect(mockGrpcClient.setAuthToken).toHaveBeenCalledWith(accessToken)
-      expect(mockSyncService.start).toHaveBeenCalled()
     })
 
-    test('should start sync service even without access token (for self-hosted)', () => {
+    test('should not set gRPC auth without access token', () => {
       handleLogin(testProfile, 'id-token', null)
 
       // gRPC auth should not be set without access token
       expect(mockGrpcClient.setAuthToken).not.toHaveBeenCalled()
-      // But sync service should start (for self-hosted users)
-      expect(mockSyncService.start).toHaveBeenCalled()
     })
 
     test('should setup services in correct order when access token present', () => {
@@ -361,9 +345,8 @@ describe('Authentication Events', () => {
       expect(calls[1]).toEqual(['idToken', 'id-token'])
       expect(calls[2]).toEqual(['accessToken', accessToken])
 
-      // Service setup should happen after token storage
+      // gRPC setup should happen after token storage
       expect(mockGrpcClient.setAuthToken).toHaveBeenCalledWith(accessToken)
-      expect(mockSyncService.start).toHaveBeenCalled()
     })
   })
 
@@ -376,9 +359,8 @@ describe('Authentication Events', () => {
       expect(mockStore.delete).toHaveBeenCalledWith('idToken')
       expect(mockStore.delete).toHaveBeenCalledWith('accessToken')
 
-      // Should clear gRPC auth and stop sync service
+      // Should clear gRPC auth
       expect(mockGrpcClient.setAuthToken).toHaveBeenCalledWith(null)
-      expect(mockSyncService.stop).toHaveBeenCalled()
     })
   })
 
@@ -619,7 +601,6 @@ describe('Authentication Events', () => {
       expect(mockStore.delete).toHaveBeenCalledWith('idToken')
       expect(mockStore.delete).toHaveBeenCalledWith('accessToken')
       expect(mockGrpcClient.setAuthToken).toHaveBeenCalledWith(null)
-      expect(mockSyncService.stop).toHaveBeenCalled()
 
       // Should clear auth store
       expect(mockStore.set).toHaveBeenCalledWith('auth', {
