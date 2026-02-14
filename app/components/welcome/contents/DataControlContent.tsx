@@ -1,13 +1,19 @@
 import { Button } from '@/app/components/ui/button'
-import { UserCircle, FileText, Trash, ShieldCheck } from '@mynaui/icons-react'
+
 import { EXTERNAL_LINKS } from '@/lib/constants/external-links'
 import { useOnboardingStore } from '@/app/store/useOnboardingStore'
 import { useSettingsStore } from '@/app/store/useSettingsStore'
+import { useAuthStore } from '@/app/store/useAuthStore'
 import { motion } from 'framer-motion'
+import { Trash, ShieldCheck } from '@mynaui/icons-react'
 
 export default function DataControlContent() {
-  const { incrementOnboardingStep, decrementOnboardingStep } =
-    useOnboardingStore()
+  const {
+    incrementOnboardingStep,
+    decrementOnboardingStep,
+    onboardingStep,
+  } = useOnboardingStore()
+  const { clearAuth } = useAuthStore()
   const { shareAnalytics, setShareAnalytics } = useSettingsStore()
 
   const containerVariants = {
@@ -40,7 +46,12 @@ export default function DataControlContent() {
             <button
               className="mb-8 text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
               type="button"
-              onClick={decrementOnboardingStep}
+              onClick={() => {
+                if (onboardingStep === 1) {
+                  clearAuth(true)
+                }
+                decrementOnboardingStep()
+              }}
             >
               &lt; Back
             </button>
@@ -53,53 +64,36 @@ export default function DataControlContent() {
             </motion.h1>
             <motion.p
               variants={itemVariants}
-              className="text-muted-foreground mb-10 text-lg"
+              className="text-muted-foreground mb-8 text-lg"
             >
-              We prioritize your privacy and transparency in how we handle your
-              information.
+              Transparent and secure data handling.
             </motion.p>
 
-            <div className="flex flex-col gap-6 mb-10">
+            <div className="flex flex-col gap-5 mb-8">
               <motion.div variants={itemVariants} className="flex gap-4">
                 <div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
-                  <UserCircle size={24} />
+                  <ShieldCheck size={22} />
                 </div>
                 <div>
-                  <h3 className="font-medium text-base mb-1">
-                    Account Management
+                  <h3 className="font-medium text-base mb-0.5">
+                    Privacy by Design
                   </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    We store your name and email purely for account management.
-                    Your personal details are never shared with third parties.
-                  </p>
-                </div>
-              </motion.div>
-
-              <motion.div variants={itemVariants} className="flex gap-4">
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-purple-600">
-                  <FileText size={24} />
-                </div>
-                <div>
-                  <h3 className="font-medium text-base mb-1">
-                    Interactions & Notes
-                  </h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    All your interactions and notes are securely stored to
-                    ensure your data is available across your devices.
+                  <p className="text-sm text-muted-foreground leading-snug">
+                    Encrypted sync for notes and settings. Your information is
+                    never shared or sold to third parties.
                   </p>
                 </div>
               </motion.div>
 
               <motion.div variants={itemVariants} className="flex gap-4">
                 <div className="flex-shrink-0 w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-green-600">
-                  <Trash size={24} />
+                  <Trash size={22} />
                 </div>
                 <div>
-                  <h3 className="font-medium text-base mb-1">Full Ownership</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    You have full control to delete your data or account at any
-                    time. Once deleted, all data is permanently removed from our
-                    systems.
+                  <h3 className="font-medium text-base mb-0.5">Instant Deletion</h3>
+                  <p className="text-sm text-muted-foreground leading-snug">
+                    One-click account and data removal. All records are
+                    permanently purged from our systems immediately.
                   </p>
                 </div>
               </motion.div>
@@ -107,11 +101,10 @@ export default function DataControlContent() {
 
             <motion.div variants={itemVariants} className="flex flex-col gap-3">
               <div
-                className={`group flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
-                  shareAnalytics
-                    ? 'border-primary bg-primary/5 shadow-sm'
-                    : 'border-border hover:border-muted-foreground/30 bg-background'
-                }`}
+                className={`group flex items-center justify-between p-3.5 rounded-xl border-2 cursor-pointer transition-all duration-200 ${shareAnalytics
+                  ? 'border-primary bg-primary/5 shadow-sm'
+                  : 'border-border hover:border-muted-foreground/30 bg-background'
+                  }`}
                 onClick={() => setShareAnalytics(true)}
               >
                 <div className="flex flex-col gap-0.5">
@@ -123,11 +116,10 @@ export default function DataControlContent() {
                   </span>
                 </div>
                 <div
-                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
-                    shareAnalytics
-                      ? 'bg-primary border-primary'
-                      : 'border-muted-foreground/30'
-                  }`}
+                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${shareAnalytics
+                    ? 'bg-primary border-primary'
+                    : 'border-muted-foreground/30'
+                    }`}
                 >
                   {shareAnalytics && (
                     <div className="w-2 h-2 rounded-full bg-white" />
@@ -136,11 +128,10 @@ export default function DataControlContent() {
               </div>
 
               <div
-                className={`group flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
-                  !shareAnalytics
-                    ? 'border-primary bg-primary/5 shadow-sm'
-                    : 'border-border hover:border-muted-foreground/30 bg-background'
-                }`}
+                className={`group flex items-center justify-between p-3.5 rounded-xl border-2 cursor-pointer transition-all duration-200 ${!shareAnalytics
+                  ? 'border-primary bg-primary/5 shadow-sm'
+                  : 'border-border hover:border-muted-foreground/30 bg-background'
+                  }`}
                 onClick={() => setShareAnalytics(false)}
               >
                 <div className="flex flex-col gap-0.5">
@@ -150,11 +141,10 @@ export default function DataControlContent() {
                   </span>
                 </div>
                 <div
-                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
-                    !shareAnalytics
-                      ? 'bg-primary border-primary'
-                      : 'border-muted-foreground/30'
-                  }`}
+                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${!shareAnalytics
+                    ? 'bg-primary border-primary'
+                    : 'border-muted-foreground/30'
+                    }`}
                 >
                   {!shareAnalytics && (
                     <div className="w-2 h-2 rounded-full bg-white" />
@@ -165,7 +155,7 @@ export default function DataControlContent() {
 
             <motion.div
               variants={itemVariants}
-              className="mt-6 text-xs text-muted-foreground"
+              className="mt-4 text-xs text-muted-foreground"
             >
               You can change these preferences anytime in settings.{' '}
               <button
