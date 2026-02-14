@@ -48,7 +48,7 @@ export default function HomeKit() {
       // When collapsing: hide text immediately, then center icons after slide completes
       setShowText(false)
       // Return no-op function
-      return () => { }
+      return () => {}
     }
   }, [navExpanded])
 

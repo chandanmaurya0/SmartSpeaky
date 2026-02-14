@@ -22,7 +22,9 @@ export default function SetLLMToken() {
     llm,
     setLlmSettings,
     grammarServiceEnabled,
+    setGrammarServiceEnabled,
     macosAccessibilityContextEnabled,
+    setMacosAccessibilityContextEnabled,
   } = useAdvancedSettingsStore()
 
   // Local state for immediate feedback, synced with store on change
@@ -34,6 +36,61 @@ export default function SetLLMToken() {
     llm.llmProvider || LLM_PROVIDERS[0].value,
   )
   const [llmKey, setLlmKey] = useState<string>(llm.llmApiKey || '')
+
+  // Keep local form fields in sync when settings are updated asynchronously.
+  useEffect(() => {
+    setAsrProvider(llm.asrProvider || ASR_PROVIDERS[0].value)
+    setAsrKey(llm.asrApiKey || '')
+    setLlmProvider(llm.llmProvider || LLM_PROVIDERS[0].value)
+    setLlmKey(llm.llmApiKey || '')
+  }, [llm.asrProvider, llm.asrApiKey, llm.llmProvider, llm.llmApiKey])
+
+  // Fetch server-side advanced settings for returning users and hydrate form/store.
+  useEffect(() => {
+    const hydrateAdvancedSettings = async () => {
+      try {
+        const remoteSettings = await window.api.getAdvancedSettings()
+        if (!remoteSettings?.llm) return
+
+        const remoteLlm = remoteSettings.llm
+        const currentLlm = useAdvancedSettingsStore.getState().llm
+        setLlmSettings({
+          asrProvider: remoteLlm.asrProvider ?? currentLlm.asrProvider,
+          asrModel: remoteLlm.asrModel ?? currentLlm.asrModel,
+          asrPrompt: remoteLlm.asrPrompt ?? currentLlm.asrPrompt,
+          llmProvider: remoteLlm.llmProvider ?? currentLlm.llmProvider,
+          llmModel: remoteLlm.llmModel ?? currentLlm.llmModel,
+          llmTemperature: remoteLlm.llmTemperature ?? currentLlm.llmTemperature,
+          transcriptionPrompt:
+            remoteLlm.transcriptionPrompt ?? currentLlm.transcriptionPrompt,
+          editingPrompt: remoteLlm.editingPrompt ?? currentLlm.editingPrompt,
+          noSpeechThreshold:
+            remoteLlm.noSpeechThreshold ?? currentLlm.noSpeechThreshold,
+          asrApiKey: remoteLlm.asrApiKey ?? currentLlm.asrApiKey,
+          llmApiKey: remoteLlm.llmApiKey ?? currentLlm.llmApiKey,
+        })
+
+        if (typeof remoteSettings.grammarServiceEnabled === 'boolean') {
+          setGrammarServiceEnabled(remoteSettings.grammarServiceEnabled)
+        }
+        if (
+          typeof remoteSettings.macosAccessibilityContextEnabled === 'boolean'
+        ) {
+          setMacosAccessibilityContextEnabled(
+            remoteSettings.macosAccessibilityContextEnabled,
+          )
+        }
+      } catch (error) {
+        console.error('Failed to load advanced settings for onboarding:', error)
+      }
+    }
+
+    hydrateAdvancedSettings()
+  }, [
+    setLlmSettings,
+    setGrammarServiceEnabled,
+    setMacosAccessibilityContextEnabled,
+  ])
 
   // Update store when local state changes
   useEffect(() => {
@@ -278,8 +335,8 @@ export default function SetLLMToken() {
           <div className="text-center max-w-xs space-y-2 opacity-80">
             <h3 className="text-lg font-medium">Bring your own keys</h3>
             <p className="text-sm text-muted-foreground">
-              SmartSpeaky connects directly to your AI providers. Your keys remain
-              on your device.
+              SmartSpeaky connects directly to your AI providers. Your keys
+              remain on your device.
             </p>
           </div>
         </motion.div>

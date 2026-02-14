@@ -1,6 +1,5 @@
 import type { ConnectRouter } from '@connectrpc/connect'
 import {
-  AudioChunk,
   ItoService as ItoServiceDesc,
   Note,
   NoteSchema,
@@ -16,7 +15,6 @@ import {
 import { create } from '@bufbuild/protobuf'
 import type { HandlerContext } from '@connectrpc/connect'
 import { getStorageClient } from '../../clients/s3storageClient.js'
-import { createAudioKey } from '../../constants/storage.js'
 import { createInteractionWithAudio } from './interactionHelpers.js'
 import {
   DictionaryRepository,
@@ -34,7 +32,7 @@ import {
 import { ConnectError, Code } from '@connectrpc/connect'
 import { kUser } from '../../auth/userContext.js'
 import { transcribeStreamV2Handler } from './transcribeStreamV2Handler.js'
-import { transcribeStreamHandler } from './transcribeStreamHandler.js'
+
 import { DEFAULT_ADVANCED_SETTINGS_STRUCT } from './constants.js'
 
 function dbToNotePb(dbNote: DbNote): Note {
@@ -135,16 +133,6 @@ export default (router: ConnectRouter) => {
       return transcribeStreamV2Handler.process(requests, context)
     },
 
-    /**
-     * @deprecated Legacy endpoint maintained for backwards compatibility.
-     * New clients should use transcribeStreamV2.
-     */
-    async transcribeStream(
-      requests: AsyncIterable<AudioChunk>,
-      context: HandlerContext,
-    ) {
-      return transcribeStreamHandler.process(requests, context)
-    },
     async createNote(request, context: HandlerContext) {
       const user = context.values.get(kUser)
       const userId = user?.sub
@@ -228,27 +216,7 @@ export default (router: ConnectRouter) => {
         throw new ConnectError('Interaction not found', Code.NotFound)
       }
 
-      // If audio is stored in S3, fetch it
-      if (interaction.raw_audio_id && !interaction.raw_audio) {
-        try {
-          const storageClient = getStorageClient()
-          const userId = interaction.user_id || 'unknown'
-          const audioKey = createAudioKey(userId, interaction.raw_audio_id)
-
-          const { body } = await storageClient.getObject(audioKey)
-          if (body) {
-            // Convert stream to buffer
-            const chunks: Uint8Array[] = []
-            for await (const chunk of body) {
-              chunks.push(chunk as Uint8Array)
-            }
-            interaction.raw_audio = Buffer.concat(chunks)
-          }
-        } catch (error) {
-          console.error('Failed to fetch audio from S3:', error)
-          // Continue without audio if S3 fetch fails
-        }
-      }
+      // Audio fetching from S3 is removed
 
       return dbToInteractionPb(interaction)
     },
@@ -267,47 +235,12 @@ export default (router: ConnectRouter) => {
         since,
       )
 
-      // Create a map to store audio buffers by interaction ID
-      const rawAudioMap = new Map<string, Buffer>()
-
-      // Fetch all audio files from S3 in parallel
-      const storageClient = getStorageClient()
-      const audioFetchPromises = interactions
-        .filter(
-          interaction => interaction.raw_audio_id && !interaction.raw_audio,
-        )
-        .map(async interaction => {
-          try {
-            const audioKey = createAudioKey(
-              interaction.user_id || userId,
-              interaction.raw_audio_id!,
-            )
-            const { body } = await storageClient.getObject(audioKey)
-            if (body) {
-              // Convert stream to buffer
-              const chunks: Uint8Array[] = []
-              for await (const chunk of body) {
-                chunks.push(chunk as Uint8Array)
-              }
-              const buffer = Buffer.concat(chunks)
-              rawAudioMap.set(interaction.id, buffer)
-            }
-          } catch (error) {
-            console.error(
-              `Failed to fetch audio for interaction ${interaction.id}:`,
-              error,
-            )
-          }
-        })
-
-      // Wait for all audio fetches to complete
-      await Promise.all(audioFetchPromises)
+      // Audio fetching logic removed
 
       return {
         interactions: interactions.map(dbInteraction => {
-          // Use S3 audio if available
-          const audioBuffer = rawAudioMap.get(dbInteraction.id) || undefined
-          return dbToInteractionPb(dbInteraction, audioBuffer)
+          // Audio buffer is no longer passed
+          return dbToInteractionPb(dbInteraction, undefined)
         }),
       }
     },

@@ -115,6 +115,7 @@ declare global {
       ) => Promise<void>
 
       deleteUserData: () => Promise<void>
+      getAdvancedSettings: () => Promise<any>
       selectedText: SelectedTextAPI
       logs: {
         download: () => Promise<{

@@ -313,15 +313,6 @@ export default function NotesContent() {
     }
   }
 
-  /* Loading Overlay */
-  {
-    isLoading && (
-      <div className="absolute inset-0 bg-white/50 z-10 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-      </div>
-    )
-  }
-
   return (
     <div
       ref={containerRef}
@@ -332,6 +323,12 @@ export default function NotesContent() {
         scrollbarWidth: 'none' /* Firefox */,
       }}
     >
+      {isLoading && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/50">
+          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-gray-900"></div>
+        </div>
+      )}
+
       {/* Header */}
       {showSearch ? (
         <div className="flex items-center gap-4 mb-8 px-4 py-2 bg-white border border-gray-200 rounded-lg">

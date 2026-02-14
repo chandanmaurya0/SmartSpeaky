@@ -45,7 +45,6 @@ export const STEP_NAMES = {
 // Order here matters for onboarding flow
 export const STEP_NAMES_ARRAY = [
   STEP_NAMES.CREATE_ACCOUNT,
-  STEP_NAMES.REFERRAL_SOURCE,
   STEP_NAMES.DATA_CONTROL,
   STEP_NAMES.PERMISSIONS,
   STEP_NAMES.MICROPHONE_TEST,
@@ -53,13 +52,14 @@ export const STEP_NAMES_ARRAY = [
   STEP_NAMES.GOOD_TO_GO,
   STEP_NAMES.INTRODUCING_INTELLIGENT_MODE,
   STEP_NAMES.ANY_APP,
+  STEP_NAMES.REFERRAL_SOURCE,
   STEP_NAMES.TRY_IT_OUT,
 ]
 
 const getOnboardingCategory = (onboardingStep: number): OnboardingCategory => {
-  if (onboardingStep < 3) return ONBOARDING_CATEGORIES.SIGN_UP
-  if (onboardingStep < 4) return ONBOARDING_CATEGORIES.PERMISSIONS
-  if (onboardingStep < 7) return ONBOARDING_CATEGORIES.SET_UP
+  if (onboardingStep < 2) return ONBOARDING_CATEGORIES.SIGN_UP
+  if (onboardingStep < 3) return ONBOARDING_CATEGORIES.PERMISSIONS
+  if (onboardingStep < 6) return ONBOARDING_CATEGORIES.SET_UP
   return ONBOARDING_CATEGORIES.TRY_IT
 }
 

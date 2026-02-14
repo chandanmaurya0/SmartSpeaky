@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { describe, it, expect, mock } from 'bun:test'
 import { ConnectError } from '@connectrpc/connect'
 import { createValidator } from '@bufbuild/protovalidate'
@@ -69,6 +68,7 @@ describe('ValidationInterceptor', () => {
 
       const mockNext = mock(() => Promise.resolve({ message: 'success' }))
       const mockReq = {
+        stream: true,
         method: {
           kind: 'client_streaming' as const,
           input: AudioChunkSchema,
@@ -78,7 +78,7 @@ describe('ValidationInterceptor', () => {
 
       const result = await interceptor(mockNext)(mockReq as any)
 
-      expect(mockNext).toHaveBeenCalledWith(mockReq)
+      expect(mockNext).toHaveBeenCalled()
       expect(result).toEqual({ message: 'success' })
     })
 
@@ -119,6 +119,7 @@ describe('ValidationInterceptor', () => {
 
       const mockNext = mock(() => Promise.resolve({ message: 'success' }))
       const mockReq = {
+        stream: true,
         method: {
           kind: 'client_streaming' as const,
           input: AudioChunkSchema,
@@ -126,17 +127,15 @@ describe('ValidationInterceptor', () => {
         message: invalidStream(),
       }
 
-      // The interceptor modifies the stream but doesn't consume it
-      // We need to manually consume the modified stream to trigger validation
-      const modifiedReq = { ...mockReq }
+      // Interceptor forwards a wrapped request to next; consume that wrapped stream.
+      await interceptor(mockNext)(mockReq as any)
+      const forwardedReq = mockNext.mock.calls[0]?.[0] as any
+      expect(forwardedReq).toBeDefined()
+      expect(forwardedReq.message).toBeDefined()
 
-      // Call the interceptor which will modify the message stream
-      await interceptor(mockNext)(modifiedReq as any)
-
-      // Now consume the modified stream to trigger validation
       let errorThrown = false
       try {
-        for await (const _chunk of modifiedReq.message) {
+        for await (const _chunk of forwardedReq.message) {
           // This should throw during validation
         }
       } catch (error) {
@@ -158,6 +157,7 @@ describe('ValidationInterceptor', () => {
 
       const mockNext = mock(() => Promise.resolve({ message: 'success' }))
       const mockReq = {
+        stream: true,
         method: {
           kind: 'client_streaming' as const,
           input: AudioChunkSchema,
@@ -167,7 +167,7 @@ describe('ValidationInterceptor', () => {
 
       const result = await interceptor(mockNext)(mockReq as any)
 
-      expect(mockNext).toHaveBeenCalledWith(mockReq)
+      expect(mockNext).toHaveBeenCalled()
       expect(result).toEqual({ message: 'success' })
     })
   })

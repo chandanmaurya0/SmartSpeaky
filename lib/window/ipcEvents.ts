@@ -577,6 +577,10 @@ export function registerIPC() {
     const result = await grpcClient.updateAdvancedSettings(advancedSettings)
     return result
   })
+  handleIPC('get-advanced-settings', async () => {
+    const { grpcClient } = await import('../clients/grpcClient')
+    return await grpcClient.getAdvancedSettings()
+  })
 
   // Server health check
   handleIPC('check-server-health', async () => {

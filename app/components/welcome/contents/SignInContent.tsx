@@ -1,16 +1,10 @@
 import { Button } from '@/app/components/ui/button'
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from '@/app/components/ui/tooltip'
 import { useOnboardingStore } from '@/app/store/useOnboardingStore'
 import ItoIcon from '../../icons/ItoIcon'
 import GoogleIcon from '../../icons/GoogleIcon'
 import GitHubIcon from '../../icons/GitHubIcon'
 import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../../auth/useAuth'
-import { checkLocalServerHealth } from '@/app/utils/healthCheck'
 import { useAuthStore } from '@/app/store/useAuthStore'
 import { useNotesStore } from '@/app/store/useNotesStore'
 import { useDictionaryStore } from '@/app/store/useDictionaryStore'
@@ -53,12 +47,6 @@ const AUTH_PROVIDERS = {
     icon: GitHubIcon,
     variant: 'outline' as const,
   },
-  'self-hosted': {
-    key: 'self-hosted',
-    label: 'Self-Hosted',
-    icon: null,
-    variant: 'default' as const,
-  },
 }
 
 // Reusable AuthButton component
@@ -95,16 +83,7 @@ function AuthButton({
   )
 
   if (disabled && title) {
-    return (
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div className="w-full">{button}</div>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>{title}</p>
-        </TooltipContent>
-      </Tooltip>
-    )
+    return <div className="w-full">{button}</div>
   }
 
   return button
@@ -116,7 +95,6 @@ export default function SignInContent() {
   const { loadNotes } = useNotesStore()
   const { loadEntries } = useDictionaryStore()
 
-  const [isServerHealthy, setIsServerHealthy] = useState(true)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoggingIn, setIsLoggingIn] = useState(false)
@@ -128,29 +106,9 @@ export default function SignInContent() {
     isAuthenticated,
     loginWithGoogle,
     loginWithGitHub,
-    loginWithSelfHosted,
     loginWithEmail,
     loginWithEmailPassword,
   } = useAuth()
-
-  // Check server health on component mount and every 5 seconds
-  useEffect(() => {
-    const checkHealth = async () => {
-      const { isHealthy } = await checkLocalServerHealth()
-      setIsServerHealthy(isHealthy)
-    }
-
-    // Initial check
-    checkHealth()
-
-    // Set up periodic checks every 5 seconds
-    const intervalId = setInterval(checkHealth, 5000)
-
-    // Cleanup interval on unmount
-    return () => {
-      clearInterval(intervalId)
-    }
-  }, [])
 
   // If user is authenticated, proceed to next step
   useEffect(() => {
@@ -158,14 +116,6 @@ export default function SignInContent() {
       incrementOnboardingStep()
     }
   }, [isAuthenticated, user, incrementOnboardingStep])
-
-  const handleSelfHosted = async () => {
-    try {
-      await loginWithSelfHosted()
-    } catch (error) {
-      console.error('Self-hosted authentication failed:', error)
-    }
-  }
 
   const handleSocialAuth = async (provider: string) => {
     try {
@@ -270,28 +220,6 @@ export default function SignInContent() {
           Continue with Email
         </Button>
       </div>
-
-      {/* Divider */}
-      <div className="flex items-center my-8">
-        <div className="flex-1 border-t border-border"></div>
-        <span className="px-4 text-xs text-muted-foreground">OR</span>
-        <div className="flex-1 border-t border-border"></div>
-      </div>
-
-      {/* Self-hosted option */}
-      <div className="space-y-4">
-        <AuthButton
-          provider="self-hosted"
-          onClick={handleSelfHosted}
-          className="w-full"
-          disabled={!isServerHealthy}
-          title={
-            !isServerHealthy
-              ? 'Local server must be running to use self-hosted option'
-              : undefined
-          }
-        />
-      </div>
     </>
   )
 
@@ -362,8 +290,6 @@ export default function SignInContent() {
         */
         case 'github':
           return () => handleSocialAuth('github')
-        case 'self-hosted':
-          return handleSelfHosted
         default:
           return () => console.error('Unknown provider:', provider)
       }
@@ -380,12 +306,6 @@ export default function SignInContent() {
           provider={provider}
           onClick={getClickHandler()}
           className="w-full"
-          disabled={provider === 'self-hosted' && !isServerHealthy}
-          title={
-            provider === 'self-hosted' && !isServerHealthy
-              ? 'Local server must be running to use self-hosted option'
-              : undefined
-          }
         >
           {getLabel()}
         </AuthButton>
@@ -435,21 +355,6 @@ export default function SignInContent() {
 
           {/* Auth buttons - conditionally rendered based on previous provider */}
           {renderAuthButton()}
-
-          {/* Terms and privacy - only show for self-hosted */}
-          {(userProvider === 'self-hosted' || !userProvider) && (
-            <p className="text-xs text-muted-foreground text-center mt-8 leading-relaxed">
-              Running SmartSpeaky locally requires additional setup. Please refer
-              to our{' '}
-              <a href="#" className="underline">
-                Github
-              </a>{' '}
-              and{' '}
-              <a href="#" className="underline">
-                Documentation
-              </a>
-            </p>
-          )}
 
           {/* Link to create new account */}
           <div className="text-center mt-3 flex justify-between">

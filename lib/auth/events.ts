@@ -7,9 +7,9 @@ import { grpcClient } from '../clients/grpcClient'
 // ...
 
 export async function onLoginSuccess(
-  userId: string,
-  accessToken: string,
-  idToken: string,
+  _userId: string,
+  _accessToken: string,
+  _idToken: string,
 ) {
   // ... existing code ...
   // syncService.start()

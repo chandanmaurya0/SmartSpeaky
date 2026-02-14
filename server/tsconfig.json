@@ -9,7 +9,12 @@
     "outDir": "./dist",
     "allowJs": true
   },
-  "include": ["src/**/*", "test-client.ts", "scripts/**/*"],
+  "include": [
+    "src/**/*",
+    "test-client.ts",
+    "verify-encryption.ts",
+    "scripts/**/*"
+  ],
   "ts-node": {
     "esm": true
   }

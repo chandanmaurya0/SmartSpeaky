@@ -16,7 +16,6 @@ export interface Interaction {
     error?: string
     [key: string]: any
   }
-  raw_audio: Uint8Array | null
   duration_ms: number
   sample_rate?: number
 }

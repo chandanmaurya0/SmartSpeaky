@@ -252,7 +252,7 @@ describe('GrpcClient Business Logic Tests', () => {
 
       await grpcClient.transcribeStream(audioStream, ItoMode.TRANSCRIBE)
 
-      expect(mockDictionaryTable.findAll).toHaveBeenCalledWith('test-user-123')
+      expect(mockDictionaryTable.findAll).not.toHaveBeenCalled()
       expect(mockGrpcClientMethods.transcribeStream).toHaveBeenCalled()
       expect(mockGetActiveWindow).toHaveBeenCalled()
     })

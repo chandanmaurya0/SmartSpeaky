@@ -185,6 +185,64 @@ mock.module('electron', () => {
   }
 })
 
+// In-memory electron-store mock to avoid filesystem writes in tests.
+mock.module('electron-store', () => {
+  const getAtPath = (obj: Record<string, any>, path: string) => {
+    return path
+      .split('.')
+      .reduce((acc: any, key) => (acc == null ? undefined : acc[key]), obj)
+  }
+
+  const setAtPath = (obj: Record<string, any>, path: string, value: any) => {
+    const keys = path.split('.')
+    const lastKey = keys.pop()
+    if (!lastKey) return
+    let cursor: Record<string, any> = obj
+    for (const key of keys) {
+      if (typeof cursor[key] !== 'object' || cursor[key] === null) {
+        cursor[key] = {}
+      }
+      cursor = cursor[key]
+    }
+    cursor[lastKey] = value
+  }
+
+  const deleteAtPath = (obj: Record<string, any>, path: string) => {
+    const keys = path.split('.')
+    const lastKey = keys.pop()
+    if (!lastKey) return
+    let cursor: Record<string, any> = obj
+    for (const key of keys) {
+      if (typeof cursor[key] !== 'object' || cursor[key] === null) return
+      cursor = cursor[key]
+    }
+    delete cursor[lastKey]
+  }
+
+  return {
+    default: class MockElectronStore<T extends Record<string, any>> {
+      private data: Record<string, any>
+
+      constructor(options?: { defaults?: T }) {
+        this.data = { ...(options?.defaults || {}) }
+      }
+
+      get(key: string): any {
+        if (!key) return this.data
+        return getAtPath(this.data, key)
+      }
+
+      set(key: string, value: any): void {
+        setAtPath(this.data, key, value)
+      }
+
+      delete(key: string): void {
+        deleteAtPath(this.data, key)
+      }
+    },
+  }
+})
+
 console.log('✓ Electron module mocked')
 
 // Export a reusable mock TimingCollector factory for tests

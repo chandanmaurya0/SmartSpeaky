@@ -424,3 +424,42 @@ export class IpLinkRepository {
     return res.rows[0]?.website_distinct_id ?? null
   }
 }
+
+export class InteractionTimingsRepository {
+  static async createMany(
+    timings: {
+      interactionId: string
+      userId: string
+      eventName: string
+      durationMs: number
+    }[],
+  ): Promise<void> {
+    if (timings.length === 0) return
+
+    // Construct placeholders for batch insert
+    const values: any[] = []
+    const placeholders: string[] = []
+    let paramIndex = 1
+
+    for (const timing of timings) {
+      values.push(
+        uuidv4(),
+        timing.interactionId,
+        timing.userId,
+        timing.eventName,
+        timing.durationMs,
+      )
+      placeholders.push(
+        `($${paramIndex}, $${paramIndex + 1}, $${paramIndex + 2}, $${paramIndex + 3}, $${paramIndex + 4}, current_timestamp)`,
+      )
+      paramIndex += 5
+    }
+
+    const query = `
+      INSERT INTO interaction_timings (id, interaction_id, user_id, event_name, duration_ms, created_at)
+      VALUES ${placeholders.join(', ')}
+    `
+
+    await pool.query(query, values)
+  }
+}

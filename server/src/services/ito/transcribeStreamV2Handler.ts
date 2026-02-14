@@ -225,7 +225,7 @@ export class TranscribeStreamV2Handler {
             asrOutput,
             llmOutput,
             durationMs: duration,
-            rawAudio: fullAudioWAV,
+            // rawAudio: fullAudioWAV, // Removed as per requirements
           })
         } catch (error) {
           console.error('Failed to create interaction:', error)

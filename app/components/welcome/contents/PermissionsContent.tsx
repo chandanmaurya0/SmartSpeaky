@@ -191,8 +191,8 @@ export default function PermissionsContent() {
                           </TooltipTrigger>
                           <TooltipContent side="right" align="start">
                             <p>
-                              SmartSpeaky uses this to gather context based on the
-                              application you&apos;re using, <br /> and to
+                              SmartSpeaky uses this to gather context based on
+                              the application you&apos;re using, <br /> and to
                               access your clipboard temporarily to paste text.
                             </p>
                           </TooltipContent>
