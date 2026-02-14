@@ -15,7 +15,7 @@ const userDataDir = path.join(app.getPath('appData'), `Ito-${stage}`)
 app.setPath('userData', userDataDir)
 
 if (stage !== 'prod') {
-  app.setName(`Ito (${stage})`)
+  app.setName(`SmartSpeaky (${stage})`)
 }
 
 export const ITO_ENV = stage

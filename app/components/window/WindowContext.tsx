@@ -11,7 +11,7 @@ export const WindowContextProvider = ({
   const [initProps, setInitProps] = useState<WindowInitProps | undefined>()
 
   const defaultTitlebar: TitlebarProps = {
-    title: 'Ito',
+    title: 'SmartSpeaky',
     icon: 'appIcon.png',
     titleCentered: false,
   }

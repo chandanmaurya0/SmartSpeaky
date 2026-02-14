@@ -34,8 +34,8 @@ import { createConnectTransport } from '@connectrpc/connect-node'
 import { ConnectError, Code } from '@connectrpc/connect'
 import { BrowserWindow } from 'electron'
 import { create } from '@bufbuild/protobuf'
-import { Note, Interaction, DictionaryItem } from '../main/sqlite/models'
-import { DictionaryTable } from '../main/sqlite/repo'
+// import { Note, Interaction, DictionaryItem } from '../main/sqlite/models'
+// import { DictionaryTable } from '../main/sqlite/repo'
 import {
   AdvancedSettings,
   getAdvancedSettings,
@@ -109,13 +109,17 @@ class GrpcClient {
     const headers = this.getHeaders()
 
     try {
-      // Fetch vocabulary from local database
-      const user_id = getCurrentUserId()
-      const dictionaryItems = await DictionaryTable.findAll(user_id)
+      // Fetch vocabulary from server (was local database)
+      // Since this is called frequently for audio streaming, we should probably optimize this
+      // by caching it in store or store.get('vocabulary') if available.
+      // For now, let's skip adding vocabulary from DB to headers to avoid a blocking API call
+      // on every stream chunk, or we can fetch it once per session.
+
+      const dictionaryItems: DictionaryItemPb[] = [] // await this.listDictionaryItemsSince()
 
       // Convert to vocabulary format for transcription
       const vocabularyWords = dictionaryItems
-        .filter(item => item.deleted_at === null)
+        // .filter(item => item.deletedAt === null) // Protobuf doesn't have deleted_at usually for list ops unless soft deleted
         .map(item => item.word)
 
       // Add vocabulary to headers if available
@@ -301,11 +305,11 @@ class GrpcClient {
   // Notes, Interactions, Dictionary (Unary Calls)
   // =================================================================
 
-  async createNote(note: Note) {
+  async createNote(note: Partial<NotePb>) {
     return this.withRetry(async () => {
       const request = create(CreateNoteRequestSchema, {
         id: note.id,
-        interactionId: note.interaction_id ?? '',
+        interactionId: note.interactionId ?? '',
         content: note.content,
       })
       return await this.client.createNote(request, {
@@ -314,7 +318,7 @@ class GrpcClient {
     })
   }
 
-  async updateNote(note: Note) {
+  async updateNote(note: Partial<NotePb>) {
     return this.withRetry(async () => {
       const request = create(UpdateNoteRequestSchema, {
         id: note.id,
@@ -326,7 +330,7 @@ class GrpcClient {
     })
   }
 
-  async deleteNote(note: Note) {
+  async deleteNote(note: Partial<NotePb>) {
     return this.withRetry(async () => {
       const request = create(DeleteNoteRequestSchema, {
         id: note.id,
@@ -349,7 +353,10 @@ class GrpcClient {
     })
   }
 
-  async createInteraction(interaction: Interaction) {
+  async createInteraction(interaction: any) {
+    // Interaction type structure changed, using any or partial PB
+    // The caller passes a local object structure, we map it to PB request
+    // interaction.raw_audio is likely Buffer or Uint8Array
     return this.withRetry(async () => {
       // Convert Buffer to Uint8Array for protobuf
       let uint8AudioData: Uint8Array
@@ -362,10 +369,14 @@ class GrpcClient {
       const request = create(CreateInteractionRequestSchema, {
         id: interaction.id,
         title: interaction.title ?? '',
-        asrOutput: JSON.stringify(interaction.asr_output),
-        llmOutput: JSON.stringify(interaction.llm_output),
+        asrOutput: JSON.stringify(
+          interaction.asr_output || interaction.asrOutput,
+        ),
+        llmOutput: JSON.stringify(
+          interaction.llm_output || interaction.llmOutput,
+        ),
         rawAudio: uint8AudioData,
-        durationMs: interaction.duration_ms ?? 0,
+        durationMs: interaction.duration_ms || interaction.durationMs || 0,
       })
 
       console.log(
@@ -382,7 +393,7 @@ class GrpcClient {
     })
   }
 
-  async updateInteraction(interaction: Interaction) {
+  async updateInteraction(interaction: Partial<InteractionPb>) {
     return this.withRetry(async () => {
       const request = create(UpdateInteractionRequestSchema, {
         id: interaction.id,
@@ -394,7 +405,7 @@ class GrpcClient {
     })
   }
 
-  async deleteInteraction(interaction: Interaction) {
+  async deleteInteraction(interaction: Partial<InteractionPb>) {
     return this.withRetry(async () => {
       const request = create(DeleteInteractionRequestSchema, {
         id: interaction.id,
@@ -417,7 +428,7 @@ class GrpcClient {
     })
   }
 
-  async createDictionaryItem(item: DictionaryItem) {
+  async createDictionaryItem(item: Partial<DictionaryItemPb>) {
     return this.withRetry(async () => {
       const request = create(CreateDictionaryItemRequestSchema, {
         id: item.id,
@@ -430,7 +441,7 @@ class GrpcClient {
     })
   }
 
-  async updateDictionaryItem(item: DictionaryItem) {
+  async updateDictionaryItem(item: Partial<DictionaryItemPb>) {
     return this.withRetry(async () => {
       const request = create(UpdateDictionaryItemRequestSchema, {
         id: item.id,
@@ -443,7 +454,7 @@ class GrpcClient {
     })
   }
 
-  async deleteDictionaryItem(item: DictionaryItem) {
+  async deleteDictionaryItem(item: Partial<DictionaryItemPb>) {
     return this.withRetry(async () => {
       const request = create(DeleteDictionaryItemRequestSchema, {
         id: item.id,

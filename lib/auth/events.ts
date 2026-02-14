@@ -2,7 +2,18 @@ import store, { AuthState, createNewAuthState } from '../main/store'
 import { STORE_KEYS } from '../constants/store-keys'
 import mainStore from '../main/store'
 import { grpcClient } from '../clients/grpcClient'
-import { syncService } from '../main/syncService'
+// import { syncService } from '../main/syncService'
+
+// ...
+
+export async function onLoginSuccess(
+  userId: string,
+  accessToken: string,
+  idToken: string,
+) {
+  // ... existing code ...
+  // syncService.start()
+}
 import { mainWindow } from '../main/app'
 import { jwtDecode } from 'jwt-decode'
 
@@ -37,7 +48,7 @@ export const isTokenExpired = (token: string): boolean => {
 // Check and validate stored tokens on startup
 export const validateStoredTokens = async (config?: any) => {
   try {
-    const storedAuth = store.get(STORE_KEYS.AUTH)
+    const storedAuth = store.get(STORE_KEYS.AUTH) as any // Cast to any or AuthStore to avoid 'unknown' error
     const storedTokens = storedAuth?.tokens
     const mainStoreAccessToken = mainStore.get(STORE_KEYS.ACCESS_TOKEN) as
       | string
@@ -104,7 +115,7 @@ export const validateStoredTokens = async (config?: any) => {
 
           // Clear gRPC client token and stop sync
           grpcClient.setAuthToken(null)
-          syncService.stop()
+          // syncService.stop()
 
           // Clear main process store
           mainStore.delete(STORE_KEYS.USER_PROFILE)
@@ -159,7 +170,7 @@ export const validateStoredTokens = async (config?: any) => {
         grpcClient.setAuthToken(null)
 
         // Stop sync service
-        syncService.stop()
+        // syncService.stop()
 
         // Clear main process store
         mainStore.delete(STORE_KEYS.USER_PROFILE)
@@ -212,7 +223,7 @@ export const generateNewAuthState = (): AuthState => {
   const newAuthState = createNewAuthState()
 
   // Update the auth state in the store
-  const currentAuth = store.get(STORE_KEYS.AUTH)
+  const currentAuth = store.get(STORE_KEYS.AUTH) as unknown as object
   store.set(STORE_KEYS.AUTH, {
     ...currentAuth,
     state: newAuthState,
@@ -224,7 +235,7 @@ export const generateNewAuthState = (): AuthState => {
 // Auth token exchange
 export const exchangeAuthCode = async (_e, { authCode, state, config }) => {
   try {
-    const authStore = store.get(STORE_KEYS.AUTH)
+    const authStore = store.get(STORE_KEYS.AUTH) as any
     const codeVerifier = authStore.state?.codeVerifier
     const storedState = authStore.state?.state
 
@@ -319,7 +330,7 @@ export const handleLogin = (
     grpcClient.setAuthToken(accessToken)
   }
 
-  syncService.start()
+  // syncService.start()
 }
 
 export const handleLogout = () => {
@@ -327,7 +338,7 @@ export const handleLogout = () => {
   mainStore.delete(STORE_KEYS.ID_TOKEN)
   mainStore.delete(STORE_KEYS.ACCESS_TOKEN)
   grpcClient.setAuthToken(null)
-  syncService.stop()
+  // syncService.stop()
 }
 
 export const refreshTokens = async (refreshToken: string, config: any) => {
@@ -390,7 +401,7 @@ export const shouldRefreshToken = (expiresAt: number): boolean => {
 
 // Automatically refresh tokens if needed
 export const ensureValidTokens = async (config: any) => {
-  const storedAuth = store.get(STORE_KEYS.AUTH)
+  const storedAuth = store.get(STORE_KEYS.AUTH) as any
   const tokens = storedAuth?.tokens
 
   if (!tokens || !tokens.refresh_token) {

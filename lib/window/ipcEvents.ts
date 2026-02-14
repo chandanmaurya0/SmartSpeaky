@@ -26,14 +26,15 @@ import {
   handleLogout,
   ensureValidTokens,
 } from '../auth/events'
-import { KeyValueStore } from '../main/sqlite/repo'
+// import { KeyValueStore } from '../main/sqlite/repo'
 import { machineId } from 'node-machine-id'
 import { Auth0Config, Auth0Connections } from '../auth/config'
-import {
-  NotesTable,
-  DictionaryTable,
-  InteractionsTable,
-} from '../main/sqlite/repo'
+// import {
+//   NotesTable,
+//   DictionaryTable,
+//   InteractionsTable,
+// } from '../main/sqlite/repo'
+import { grpcClient } from '../clients/grpcClient'
 import { audioRecorderService } from '../media/audio'
 import { voiceInputService } from '../main/voiceInputService'
 import { itoSessionManager } from '../main/itoSessionManager'
@@ -209,8 +210,9 @@ export function registerIPC() {
     try {
       const userId = getCurrentUserId()
       if (!userId) return null
-      const json = await KeyValueStore.get(`onboarding:${userId}`)
-      return json ? JSON.parse(json) : null
+      // Use electron-store instead of SQLite KeyValueStore
+      const val = store.get(`onboarding:${userId}`)
+      return val ? (typeof val === 'string' ? JSON.parse(val) : val) : null
     } catch (error) {
       log.error('[IPC] Failed to get onboarding state:', error)
       return null
@@ -495,42 +497,66 @@ export function registerIPC() {
   })
 
   // Notes
-  handleIPC('notes:get-all', () => {
-    const user_id = getCurrentUserId()
-    return NotesTable.findAll(user_id)
+  handleIPC('notes:get-all', async () => {
+    try {
+      return await grpcClient.listNotesSince()
+    } catch (error) {
+      console.error('Failed to fetch notes:', error)
+      throw error
+    }
   })
-  handleIPC('notes:add', async (_e, note) => NotesTable.insert(note))
+  handleIPC('notes:add', async (_e, note) => grpcClient.createNote(note))
   handleIPC('notes:update-content', async (_e, { id, content }) =>
-    NotesTable.updateContent(id, content),
+    grpcClient.updateNote({ id, content } as any),
   )
-  handleIPC('notes:delete', async (_e, id) => NotesTable.softDelete(id))
+  handleIPC('notes:delete', async (_e, id) =>
+    grpcClient.deleteNote({ id } as any),
+  )
 
   // Dictionary
-  handleIPC('dictionary:get-all', () => {
-    const user_id = getCurrentUserId()
-    return DictionaryTable.findAll(user_id)
+  handleIPC('dictionary:get-all', async () => {
+    try {
+      return await grpcClient.listDictionaryItemsSince()
+    } catch (error) {
+      console.error('Failed to fetch dictionary:', error)
+      throw error
+    }
   })
   handleIPC('dictionary:add', async (_e, item) => {
-    return await DictionaryTable.insert(item)
+    return await grpcClient.createDictionaryItem(item)
   })
   handleIPC('dictionary:update', async (_e, { id, word, pronunciation }) => {
-    return await DictionaryTable.update(id, word, pronunciation)
+    return await grpcClient.updateDictionaryItem({
+      id,
+      word,
+      pronunciation,
+    } as any)
   })
   handleIPC('dictionary:delete', async (_e, id) =>
-    DictionaryTable.softDelete(id),
+    grpcClient.deleteDictionaryItem({ id } as any),
   )
 
   // Interactions
-  handleIPC('interactions:get-all', () => {
-    const user_id = getCurrentUserId()
-    return InteractionsTable.findAll(user_id)
+  handleIPC('interactions:get-all', async () => {
+    try {
+      return await grpcClient.listInteractionsSince()
+    } catch (error) {
+      console.error('Failed to fetch interactions:', error)
+      throw error
+    }
   })
-  handleIPC('interactions:get-by-id', async (_e, id) =>
-    InteractionsTable.findById(id),
-  )
+  handleIPC('interactions:get-by-id', async (_e, id) => {
+    // Interactions by ID isn't directly supported by gRPC list,
+    // but usually frontends don't call this often.
+    // We might need to implement getInteraction on the server if needed.
+    // For now, we'll return undefined or fetch all and find.
+    // Optimized approach:
+    const all = await grpcClient.listInteractionsSince()
+    return all.find(i => i.id === id)
+  })
 
   handleIPC('interactions:delete', async (_e, id) =>
-    InteractionsTable.softDelete(id),
+    grpcClient.deleteInteraction({ id } as any),
   )
 
   // User Data Deletion
@@ -540,8 +566,9 @@ export function registerIPC() {
       log.error('No user ID found to delete data.')
       return false
     }
-    const { deleteCompleteUserData } = await import('../main/sqlite/db')
-    return deleteCompleteUserData(userId)
+    // const { deleteCompleteUserData } = await import('../main/sqlite/db')
+    // return deleteCompleteUserData(userId)
+    return grpcClient.deleteUserData()
   })
 
   handleIPC('update-advanced-settings', async (_e, advancedSettings) => {
@@ -595,13 +622,14 @@ export function registerIPC() {
 
   // Debug methods
   handleIPC('debug:check-schema', async () => {
-    const { getDb } = await import('../main/sqlite/db.js')
-    const db = getDb()
-    return new Promise((resolve, reject) => {
-      db.all('PRAGMA table_info(interactions)', (err, rows) => {
-        if (err) reject(err)
-        else resolve(rows)
-      })
+    // const { getDb } = await import('../main/sqlite/db.js')
+    // const db = getDb()
+    return new Promise(resolve => {
+      resolve([])
+      // db.all('PRAGMA table_info(interactions)', (err, rows) => {
+      //   if (err) reject(err)
+      //   else resolve(rows)
+      // })
     })
   })
 
@@ -624,7 +652,7 @@ export function registerIPC() {
 
   ipcMain.on('start-native-recording-test', _event => {
     console.log(`IPC: Received 'start-native-recording-test'`)
-    const deviceId = store.get(STORE_KEYS.SETTINGS).microphoneDeviceId
+    const deviceId = (store.get(STORE_KEYS.SETTINGS) as any).microphoneDeviceId
     audioRecorderService.startRecording(deviceId)
   })
 
@@ -643,13 +671,13 @@ export function registerIPC() {
   // Analytics Device ID storage - using machine ID
   handleIPC('analytics:get-device-id', async () => {
     try {
-      // First try to get cached device ID from SQLite
-      let deviceId = await KeyValueStore.get('analytics_device_id')
+      // First try to get cached device ID from Store
+      let deviceId = store.get('analytics_device_id') as string
 
       if (!deviceId) {
         // Generate machine-specific ID if none exists
         deviceId = await machineId()
-        await KeyValueStore.set('analytics_device_id', deviceId)
+        store.set('analytics_device_id', deviceId)
         console.log(
           '[Analytics] Generated new machine-based device ID:',
           deviceId,
@@ -864,7 +892,7 @@ ipcMain.on(IPC_EVENTS.ONBOARDING_UPDATE, async (_event, onboarding: any) => {
         onboardingStep: onboarding.onboardingStep,
         onboardingCompleted: onboarding.onboardingCompleted,
       }
-      await KeyValueStore.set(`onboarding:${userId}`, JSON.stringify(payload))
+      store.set(`onboarding:${userId}`, JSON.stringify(payload))
     }
   } catch (error) {
     log.error('[IPC] Failed to persist onboarding update:', error)

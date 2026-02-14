@@ -12,7 +12,7 @@ import { EXTERNAL_LINKS } from '@/lib/constants/external-links'
 import { useSettingsStore } from '../../../store/useSettingsStore'
 import { Tooltip, TooltipTrigger, TooltipContent } from '../../ui/tooltip'
 import { useAuthStore } from '@/app/store/useAuthStore'
-import { Interaction } from '@/lib/main/sqlite/models'
+import { Interaction as InteractionPb } from '@/app/generated/ito_pb'
 import { TotalWordsIcon } from '../../icons/TotalWordsIcon'
 import { SpeedIcon } from '../../icons/SpeedIcon'
 import {
@@ -29,7 +29,11 @@ import { getKeyDisplay } from '@/app/utils/keyboard'
 import { createStereo48kWavFromMonoPCM } from '@/app/utils/audioUtils'
 import { KeyName } from '@/lib/types/keyboard'
 import { usePlatform } from '@/app/hooks/usePlatform'
-import { calculateAllStats, InteractionStats } from '@/app/utils/userMetrics'
+import {
+  calculateAllStats,
+  InteractionStats,
+  Interaction,
+} from '@/app/utils/userMetrics'
 
 const StatCard = ({
   title,
@@ -89,7 +93,45 @@ export default function HomeContent() {
 
   const loadInteractions = useCallback(async () => {
     try {
-      const allInteractions = await window.api.interactions.getAll()
+      const allRawInteractions =
+        (await window.api.interactions.getAll()) as unknown as InteractionPb[]
+
+      const allInteractions: Interaction[] = allRawInteractions.map(
+        (i: InteractionPb) => {
+          let asrOutput = {}
+          try {
+            asrOutput =
+              typeof i.asrOutput === 'string'
+                ? JSON.parse(i.asrOutput)
+                : i.asrOutput
+          } catch (e) {
+            /* ignore */
+          }
+
+          let llmOutput = {}
+          try {
+            llmOutput =
+              typeof i.llmOutput === 'string'
+                ? JSON.parse(i.llmOutput)
+                : i.llmOutput
+          } catch (e) {
+            /* ignore */
+          }
+
+          return {
+            id: i.id,
+            user_id: i.userId,
+            created_at: i.createdAt,
+            updated_at: i.updatedAt,
+            asr_output: asrOutput,
+            llm_output: llmOutput,
+            raw_audio: i.rawAudio,
+            duration_ms: i.durationMs,
+            sample_rate: 16000,
+            title: i.title,
+          } as Interaction
+        },
+      )
 
       // Sort by creation date (newest first) - remove the slice(0, 10) to show all interactions
       const sortedInteractions = allInteractions.sort(
@@ -207,7 +249,8 @@ export default function HomeContent() {
         return {
           text: 'Audio is silent',
           isError: true,
-          tooltip: "VibeType didn't detect any words so the transcript is empty",
+          tooltip:
+            "SmartSpeaky didn't detect any words so the transcript is empty",
         }
       }
       return {
@@ -224,7 +267,7 @@ export default function HomeContent() {
       return {
         text: 'Audio is silent.',
         isError: true,
-        tooltip: "VibeType didn't detect any words so the transcript is empty",
+        tooltip: "SmartSpeaky didn't detect any words so the transcript is empty",
       }
     }
 
@@ -560,10 +603,11 @@ export default function HomeContent() {
                             >
                               <TooltipTrigger asChild>
                                 <button
-                                  className={`p-1.5 hover:bg-gray-200 rounded transition-colors cursor-pointer ${copiedItems.has(interaction.id)
+                                  className={`p-1.5 hover:bg-gray-200 rounded transition-colors cursor-pointer ${
+                                    copiedItems.has(interaction.id)
                                       ? 'text-green-600'
                                       : 'text-gray-600'
-                                    }`}
+                                  }`}
                                   onClick={() =>
                                     copyToClipboard(
                                       displayInfo.text,
@@ -625,10 +669,11 @@ export default function HomeContent() {
                           >
                             <TooltipTrigger asChild>
                               <button
-                                className={`p-1.5 hover:bg-gray-200 rounded transition-colors cursor-pointer ${playingAudio === interaction.id
+                                className={`p-1.5 hover:bg-gray-200 rounded transition-colors cursor-pointer ${
+                                  playingAudio === interaction.id
                                     ? 'bg-blue-50 text-blue-600'
                                     : 'text-gray-600'
-                                  }`}
+                                }`}
                                 onClick={() => handleAudioPlayStop(interaction)}
                                 disabled={!interaction.raw_audio}
                               >

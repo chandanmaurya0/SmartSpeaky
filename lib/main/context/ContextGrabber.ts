@@ -1,6 +1,6 @@
 import { ItoMode } from '@/app/generated/ito_pb'
-import { DictionaryTable } from '../sqlite/repo'
-import { getCurrentUserId, getAdvancedSettings } from '../store'
+// import { DictionaryTable } from '../sqlite/repo'
+import { getAdvancedSettings } from '../store'
 import { getActiveWindow } from '../../media/active-application'
 import {
   getSelectedTextString,
@@ -58,11 +58,12 @@ export class ContextGrabber {
 
   private async getVocabulary(): Promise<string[]> {
     try {
-      const userId = getCurrentUserId()
-      const dictionaryItems = await DictionaryTable.findAll(userId)
-      return dictionaryItems
-        .filter(item => item.deleted_at === null)
-        .map(item => item.word)
+      // const userId = getCurrentUserId()
+      // const dictionaryItems = await DictionaryTable.findAll(userId)
+      // return dictionaryItems
+      //   .filter(item => item.deleted_at === null)
+      //   .map(item => item.word)
+      return []
     } catch (error) {
       log.error('[ContextGrabber] Error getting vocabulary:', error)
       return []

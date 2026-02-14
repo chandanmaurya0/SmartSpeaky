@@ -1,10 +1,5 @@
 import { Button } from '@/app/components/ui/button'
-import {
-  UserCircle,
-  FileText,
-  Trash,
-  ShieldCheck,
-} from '@mynaui/icons-react'
+import { UserCircle, FileText, Trash, ShieldCheck } from '@mynaui/icons-react'
 import { EXTERNAL_LINKS } from '@/lib/constants/external-links'
 import { useOnboardingStore } from '@/app/store/useOnboardingStore'
 import { useSettingsStore } from '@/app/store/useSettingsStore'
@@ -112,23 +107,27 @@ export default function DataControlContent() {
 
             <motion.div variants={itemVariants} className="flex flex-col gap-3">
               <div
-                className={`group flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 ${shareAnalytics
-                  ? 'border-primary bg-primary/5 shadow-sm'
-                  : 'border-border hover:border-muted-foreground/30 bg-background'
-                  }`}
+                className={`group flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
+                  shareAnalytics
+                    ? 'border-primary bg-primary/5 shadow-sm'
+                    : 'border-border hover:border-muted-foreground/30 bg-background'
+                }`}
                 onClick={() => setShareAnalytics(true)}
               >
                 <div className="flex flex-col gap-0.5">
-                  <span className="font-medium text-sm">Help improve VibeType</span>
+                  <span className="font-medium text-sm">
+                    Help improve SmartSpeaky
+                  </span>
                   <span className="text-xs text-muted-foreground">
                     Share anonymous usage data to help us build better models.
                   </span>
                 </div>
                 <div
-                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${shareAnalytics
-                    ? 'bg-primary border-primary'
-                    : 'border-muted-foreground/30'
-                    }`}
+                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+                    shareAnalytics
+                      ? 'bg-primary border-primary'
+                      : 'border-muted-foreground/30'
+                  }`}
                 >
                   {shareAnalytics && (
                     <div className="w-2 h-2 rounded-full bg-white" />
@@ -137,10 +136,11 @@ export default function DataControlContent() {
               </div>
 
               <div
-                className={`group flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 ${!shareAnalytics
-                  ? 'border-primary bg-primary/5 shadow-sm'
-                  : 'border-border hover:border-muted-foreground/30 bg-background'
-                  }`}
+                className={`group flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
+                  !shareAnalytics
+                    ? 'border-primary bg-primary/5 shadow-sm'
+                    : 'border-border hover:border-muted-foreground/30 bg-background'
+                }`}
                 onClick={() => setShareAnalytics(false)}
               >
                 <div className="flex flex-col gap-0.5">
@@ -150,10 +150,11 @@ export default function DataControlContent() {
                   </span>
                 </div>
                 <div
-                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${!shareAnalytics
-                    ? 'bg-primary border-primary'
-                    : 'border-muted-foreground/30'
-                    }`}
+                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+                    !shareAnalytics
+                      ? 'bg-primary border-primary'
+                      : 'border-muted-foreground/30'
+                  }`}
                 >
                   {!shareAnalytics && (
                     <div className="w-2 h-2 rounded-full bg-white" />
@@ -217,4 +218,3 @@ export default function DataControlContent() {
     </div>
   )
 }
-

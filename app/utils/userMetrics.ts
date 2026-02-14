@@ -1,4 +1,25 @@
-import { Interaction } from '@/lib/main/sqlite/models'
+// Define the legacy Interaction interface locally as the original source is missing
+export interface Interaction {
+  id: string
+  user_id: string
+  title?: string
+  created_at: string
+  updated_at: string
+  asr_output: {
+    transcript?: string
+    error?: string
+    errorCode?: string
+    [key: string]: any
+  }
+  llm_output: {
+    adjustedTranscript?: string
+    error?: string
+    [key: string]: any
+  }
+  raw_audio: Uint8Array | null
+  duration_ms: number
+  sample_rate?: number
+}
 
 /**
  * Get the start of the current week (Monday at 00:00:00)

@@ -171,7 +171,7 @@ export default function CreateAccountContent() {
       <EmailLoginContent
         initialEmail={email}
         onBack={() => setShowEmailLogin(false)}
-        onContinue={() => { }}
+        onContinue={() => {}}
       />
     )
   }
@@ -204,7 +204,7 @@ export default function CreateAccountContent() {
         {/* Title and subtitle */}
         <div className="text-center mb-10">
           <h1 className="text-3xl font-semibold mb-3 text-foreground">
-            Get started with VibeType
+            Get started with SmartSpeaky
           </h1>
           <p className="text-muted-foreground text-base">
             Smart dictation. Everywhere you want.
@@ -262,8 +262,9 @@ export default function CreateAccountContent() {
             aria-describedby={
               emailTouched && !emailOk ? 'signup-email-error' : undefined
             }
-            className={`w-full h-12 px-3 rounded-md border bg-background text-foreground placeholder:text-muted-foreground ${emailTouched && !emailOk ? 'border-destructive' : 'border-border'
-              }`}
+            className={`w-full h-12 px-3 rounded-md border bg-background text-foreground placeholder:text-muted-foreground ${
+              emailTouched && !emailOk ? 'border-destructive' : 'border-border'
+            }`}
           />
           {emailTouched && !emailOk && (
             <p id="signup-email-error" className="text-xs text-destructive">
@@ -315,8 +316,8 @@ export default function CreateAccountContent() {
 
             <div className="rounded-md bg-[#F5F5F5] p-4">
               <p className="text-sm font-medium leading-5 text-black">
-                Running VibeType locally requires additional setup. Please refer to
-                our Github and Documentation
+                Running SmartSpeaky locally requires additional setup. Please refer
+                to our Github and Documentation
               </p>
               <div className="mt-4 flex w-full gap-4">
                 <Button

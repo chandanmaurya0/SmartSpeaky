@@ -72,7 +72,7 @@ export default function GeneralSettingsContent() {
             <div>
               <div className="text-sm font-medium">Share analytics</div>
               <div className="text-xs text-gray-600 mt-1">
-                Share anonymous usage data to help us improve VibeType.
+                Share anonymous usage data to help us improve SmartSpeaky.
               </div>
             </div>
             <Switch
@@ -85,7 +85,7 @@ export default function GeneralSettingsContent() {
             <div>
               <div className="text-sm font-medium">Launch at Login</div>
               <div className="text-xs text-gray-600 mt-1">
-                Open VibeType automatically when your computer starts.
+                Open SmartSpeaky automatically when your computer starts.
               </div>
             </div>
             <Switch
@@ -97,10 +97,10 @@ export default function GeneralSettingsContent() {
           <div className="flex items-center justify-between">
             <div>
               <div className="text-sm font-medium">
-                Show VibeType bar at all times
+                Show SmartSpeaky bar at all times
               </div>
               <div className="text-xs text-gray-600 mt-1">
-                Show the VibeType bar at all times.
+                Show the SmartSpeaky bar at all times.
               </div>
             </div>
             <Switch
@@ -114,7 +114,7 @@ export default function GeneralSettingsContent() {
               <div>
                 <div className="text-sm font-medium">Show app in dock</div>
                 <div className="text-xs text-gray-600 mt-1">
-                  Show the VibeType app in the dock for quick access.
+                  Show the SmartSpeaky app in the dock for quick access.
                 </div>
               </div>
               <Switch

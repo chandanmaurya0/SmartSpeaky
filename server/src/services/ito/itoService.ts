@@ -24,6 +24,7 @@ import {
   NotesRepository,
   AdvancedSettingsRepository,
 } from '../../db/repo.js'
+import { settingsService } from '../settings/settingsService.js'
 import {
   Note as DbNote,
   Interaction as DbInteraction,
@@ -398,19 +399,7 @@ export default (router: ConnectRouter) => {
         throw new ConnectError('User not authenticated', Code.Unauthenticated)
       }
 
-      const settings = await AdvancedSettingsRepository.findByUserId(userId)
-      if (!settings) {
-        // Return default settings if none exist
-        return create(AdvancedSettingsSchema, {
-          id: '',
-          userId: userId,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          llm: create(LlmSettingsSchema, {}),
-          default: DEFAULT_ADVANCED_SETTINGS_STRUCT,
-        })
-      }
-
+      const settings = await settingsService.getAdvancedSettings(userId)
       return dbToAdvancedSettingsPb(settings)
     },
 
@@ -421,7 +410,7 @@ export default (router: ConnectRouter) => {
         throw new ConnectError('User not authenticated', Code.Unauthenticated)
       }
 
-      const updatedSettings = await AdvancedSettingsRepository.upsert(
+      const updatedSettings = await settingsService.updateAdvancedSettings(
         userId,
         request,
       )

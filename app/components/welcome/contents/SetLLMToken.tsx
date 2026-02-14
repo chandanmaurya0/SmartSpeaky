@@ -5,27 +5,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '../../ui/dropdown-menu'
-import {
-  Key,
-  ChevronDown,
-  Cpu,
-  Mic,
-  CheckCircle,
-} from 'lucide-react'
+import { Key, ChevronDown, Cpu, Mic, CheckCircle } from 'lucide-react'
 import { useOnboardingStore } from '@/app/store/useOnboardingStore'
-import {
-  useAdvancedSettingsStore,
-} from '@/app/store/useAdvancedSettingsStore'
+import { useAdvancedSettingsStore } from '@/app/store/useAdvancedSettingsStore'
 import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
 
-const ASR_PROVIDERS = [
-  { label: 'Groq', value: 'groq' },
-]
+const ASR_PROVIDERS = [{ label: 'Groq', value: 'groq' }]
 
-const LLM_PROVIDERS = [
-  { label: 'Groq', value: 'groq' },
-]
+const LLM_PROVIDERS = [{ label: 'Groq', value: 'groq' }]
 
 export default function SetLLMToken() {
   const { incrementOnboardingStep, decrementOnboardingStep } =
@@ -119,7 +107,7 @@ export default function SetLLMToken() {
               variants={itemVariants}
               className="text-muted-foreground mb-10 text-lg"
             >
-              Configure your AI providers to power VibeType's recognition and
+              Configure your AI providers to power SmartSpeaky's recognition and
               reasoning capabilities.
             </motion.p>
 
@@ -290,7 +278,8 @@ export default function SetLLMToken() {
           <div className="text-center max-w-xs space-y-2 opacity-80">
             <h3 className="text-lg font-medium">Bring your own keys</h3>
             <p className="text-sm text-muted-foreground">
-              VibeType connects directly to your AI providers. Your keys remain on your device.
+              SmartSpeaky connects directly to your AI providers. Your keys remain
+              on your device.
             </p>
           </div>
         </motion.div>

@@ -51,7 +51,7 @@ export function initializeAutoUpdater() {
         provider: 's3',
         bucket,
         path: 'releases/',
-        region: 'us-west-2',
+        region: 'ap-south-1',
       })
 
       log.transports.file.level = 'debug'
@@ -65,12 +65,12 @@ export function initializeAutoUpdater() {
       autoUpdater.checkForUpdates()
 
       // Poll for updates every 10 minutes
-      setInterval(
-        () => {
-          autoUpdater.checkForUpdates()
-        },
-        10 * 60 * 1000,
-      )
+      // setInterval(
+      //   () => {
+      //     autoUpdater.checkForUpdates()
+      //   },
+      //   10 * 60 * 1000,
+      // )
     } catch (e) {
       console.error('Failed to check for auto updates:', e)
     }

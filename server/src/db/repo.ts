@@ -14,21 +14,24 @@ import {
   UpdateDictionaryItemRequest,
   UpdateAdvancedSettingsRequest,
 } from '../generated/ito_pb.js'
+import { encrypt, decrypt } from '../utils/encryption.js'
+import { v4 as uuidv4 } from 'uuid'
 
 export class NotesRepository {
   static async create(
     noteData: CreateNoteRequest & { userId: string },
   ): Promise<Note> {
+    const id = noteData.id || uuidv4()
+    const interactionId =
+      noteData.interactionId && noteData.interactionId !== ''
+        ? noteData.interactionId
+        : null
+
     const res = await pool.query<Note>(
       `INSERT INTO notes (id, user_id, interaction_id, content)
        VALUES ($1, $2, $3, $4)
        RETURNING *`,
-      [
-        noteData.id,
-        noteData.userId,
-        noteData.interactionId || null,
-        noteData.content,
-      ],
+      [id, noteData.userId, interactionId, noteData.content],
     )
     return res.rows[0]
   }
@@ -107,6 +110,13 @@ export class InteractionsRepository {
     const res = await pool.query<Interaction>(
       `INSERT INTO interactions (id, user_id, title, asr_output, llm_output, raw_audio_id, duration_ms)
        VALUES ($1, $2, $3, $4, $5, $6, $7)
+       ON CONFLICT (id) DO UPDATE SET
+         title = EXCLUDED.title,
+         asr_output = EXCLUDED.asr_output,
+         llm_output = EXCLUDED.llm_output,
+         raw_audio_id = EXCLUDED.raw_audio_id,
+         duration_ms = EXCLUDED.duration_ms,
+         updated_at = current_timestamp
        RETURNING *`,
       [
         interactionData.id,
@@ -197,7 +207,12 @@ export class DictionaryRepository {
       `INSERT INTO dictionary_items (id, user_id, word, pronunciation)
        VALUES ($1, $2, $3, $4)
        RETURNING *`,
-      [itemData.id, itemData.userId, itemData.word, itemData.pronunciation],
+      [
+        itemData.id || uuidv4(),
+        itemData.userId,
+        itemData.word,
+        itemData.pronunciation,
+      ],
     )
     return res.rows[0]
   }
@@ -290,8 +305,8 @@ export class AdvancedSettingsRepository {
         editing_prompt: llmSettings.editing_prompt,
         no_speech_threshold: llmSettings.no_speech_threshold,
         low_quality_threshold: llmSettings.low_quality_threshold,
-        asr_api_key: llmSettings.asr_api_key,
-        llm_api_key: llmSettings.llm_api_key,
+        asr_api_key: decrypt(llmSettings.asr_api_key || ''),
+        llm_api_key: decrypt(llmSettings.llm_api_key || ''),
       },
       created_at: llmSettings.created_at,
       updated_at: llmSettings.updated_at,
@@ -337,8 +352,8 @@ export class AdvancedSettingsRepository {
         settingsData.llm?.editingPrompt || '',
         settingsData.llm?.noSpeechThreshold || 0.0,
         settingsData.llm?.lowQualityThreshold || 0.0,
-        settingsData.llm?.asrApiKey || '',
-        settingsData.llm?.llmApiKey || '',
+        encrypt(settingsData.llm?.asrApiKey || ''),
+        encrypt(settingsData.llm?.llmApiKey || ''),
       ],
     )
 
@@ -357,8 +372,8 @@ export class AdvancedSettingsRepository {
         editing_prompt: llmSettings.editing_prompt,
         no_speech_threshold: llmSettings.no_speech_threshold,
         low_quality_threshold: llmSettings.low_quality_threshold,
-        asr_api_key: llmSettings.asr_api_key,
-        llm_api_key: llmSettings.llm_api_key,
+        asr_api_key: decrypt(llmSettings.asr_api_key || ''),
+        llm_api_key: decrypt(llmSettings.llm_api_key || ''),
       },
       created_at: llmSettings.created_at,
       updated_at: llmSettings.updated_at,

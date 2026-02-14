@@ -24,7 +24,7 @@ const getWindowsResources = () => {
 const stage = process.env.ITO_ENV || 'prod'
 module.exports = {
   appId: stage === 'prod' ? 'ai.ito.ito' : `ai.ito.ito-${stage.toLowerCase()}`,
-  productName: stage === 'prod' ? 'Ito' : `Ito-${stage}`,
+  productName: stage === 'prod' ? 'SmartSpeaky' : `SmartSpeaky-${stage}`,
   copyright: 'Copyright © 2025 Demox Labs',
   directories: {
     buildResources: 'resources',
@@ -79,7 +79,7 @@ module.exports = {
     entitlementsInherit: 'build/entitlements.mac.inherit.plist',
     extendInfo: {
       NSMicrophoneUsageDescription:
-        'Ito requires microphone access to transcribe your speech.',
+        'SmartSpeaky requires microphone access to transcribe your speech.',
     },
     extraResources: [
       ...getMacResources(),
@@ -105,7 +105,7 @@ module.exports = {
     ],
     artifactName: '${productName}-${version}.${ext}',
     icon: 'resources/build/icon.ico',
-    executableName: 'Ito',
+    executableName: 'SmartSpeaky',
     requestedExecutionLevel: 'asInvoker',
     extraResources: [
       ...getWindowsResources(),

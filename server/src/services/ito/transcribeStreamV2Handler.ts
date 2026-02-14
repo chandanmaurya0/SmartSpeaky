@@ -31,6 +31,8 @@ import {
 import { kUser } from '../../auth/userContext.js'
 import { createInteractionWithAudio } from './interactionHelpers.js'
 import { v4 as uuidv4 } from 'uuid'
+import { settingsService } from '../settings/settingsService.js'
+import { AdvancedSettings } from '../../db/models.js'
 
 export class TranscribeStreamV2Handler {
   private readonly MODE_CHANGE_GRACE_PERIOD_MS = 100
@@ -99,8 +101,24 @@ export class TranscribeStreamV2Handler {
           )
         : prepareAudioForTranscription(fullAudio)
 
+      // Fetch user settings from cache/db if available
+      let userSettings: AdvancedSettings | null = null
+      if (userId) {
+        try {
+          userSettings = await settingsService.getAdvancedSettings(userId)
+          console.log('#### Pulled user settings.  ####')
+        } catch (error) {
+          console.error('Failed to fetch user settings:', error)
+          // Continue with defaults
+        }
+      }
+
       // Extract configuration
-      const asrConfig = this.extractAsrConfig(mergedConfig, context)
+      const asrConfig = this.extractAsrConfig(
+        mergedConfig,
+        context,
+        userSettings,
+      )
 
       // Time transcription
       let transcript = await serverTimingCollector.timeAsync(
@@ -121,8 +139,9 @@ export class TranscribeStreamV2Handler {
       // Resolve LLM API key: Config > Header > Default
       const configKey = mergedConfig.llmSettings?.llmApiKey
       const headerKey = context?.requestHeader.get('llm-api-key') || undefined
+      const userKey = userSettings?.llm.llm_api_key || undefined
 
-      const rawLlmApiKey: string | undefined = configKey || headerKey
+      const rawLlmApiKey: string | undefined = configKey || headerKey || userKey
 
       const llmApiKey = this.resolveOrDefault(
         rawLlmApiKey,
@@ -136,6 +155,7 @@ export class TranscribeStreamV2Handler {
         asrConfig.asrApiKey,
         llmApiKey,
         asrConfig.noSpeechThreshold,
+        userSettings,
       )
 
       // Store original ASR transcript before adjustment
@@ -342,19 +362,23 @@ export class TranscribeStreamV2Handler {
   private extractAsrConfig(
     mergedConfig: StreamConfig,
     context?: HandlerContext,
+    userSettings?: AdvancedSettings | null,
   ) {
     let asrApiKey = mergedConfig.llmSettings?.asrApiKey
     if (!asrApiKey && context) {
       asrApiKey = context.requestHeader.get('asr-api-key') || undefined
     }
+    if (!asrApiKey && userSettings?.llm.asr_api_key) {
+      asrApiKey = userSettings.llm.asr_api_key
+    }
 
     const config = {
       asrModel: this.resolveOrDefault(
-        mergedConfig.llmSettings?.asrModel,
+        mergedConfig.llmSettings?.asrModel || userSettings?.llm.asr_model,
         DEFAULT_ADVANCED_SETTINGS.asrModel,
       ),
       asrProvider: this.resolveOrDefault(
-        mergedConfig.llmSettings?.asrProvider,
+        mergedConfig.llmSettings?.asrProvider || userSettings?.llm.asr_provider,
         DEFAULT_ADVANCED_SETTINGS.asrProvider,
       ),
       asrApiKey: this.resolveOrDefault(
@@ -363,6 +387,7 @@ export class TranscribeStreamV2Handler {
       ),
       noSpeechThreshold:
         mergedConfig.llmSettings?.noSpeechThreshold ||
+        userSettings?.llm.no_speech_threshold ||
         DEFAULT_ADVANCED_SETTINGS.noSpeechThreshold,
       vocabulary: mergedConfig.vocabulary,
     }
@@ -384,7 +409,7 @@ export class TranscribeStreamV2Handler {
    * This provides a defensive fallback for optional protobuf fields.
    */
   private resolveOrDefault<T extends string | number>(
-    value: T | undefined,
+    value: T | null | undefined,
     defaultValue: T,
   ): T {
     if (value === undefined || value === '' || value === null) {
@@ -400,6 +425,7 @@ export class TranscribeStreamV2Handler {
     asrApiKey: string,
     llmApiKey: string,
     noSpeechThreshold: number,
+    userSettings?: AdvancedSettings | null,
   ) {
     return {
       asrModel: this.resolveOrDefault(
@@ -419,27 +445,30 @@ export class TranscribeStreamV2Handler {
         (DEFAULT_ADVANCED_SETTINGS as any).llmApiKey || '',
       ),
       asrPrompt: this.resolveOrDefault(
-        mergedConfig.llmSettings?.asrPrompt,
+        mergedConfig.llmSettings?.asrPrompt || userSettings?.llm.asr_prompt,
         DEFAULT_ADVANCED_SETTINGS.asrPrompt,
       ),
       llmProvider: this.resolveOrDefault(
-        mergedConfig.llmSettings?.llmProvider,
+        mergedConfig.llmSettings?.llmProvider || userSettings?.llm.llm_provider,
         DEFAULT_ADVANCED_SETTINGS.llmProvider,
       ),
       llmModel: this.resolveOrDefault(
-        mergedConfig.llmSettings?.llmModel,
+        mergedConfig.llmSettings?.llmModel || userSettings?.llm.llm_model,
         DEFAULT_ADVANCED_SETTINGS.llmModel,
       ),
       llmTemperature: this.resolveOrDefault(
-        mergedConfig.llmSettings?.llmTemperature,
+        mergedConfig.llmSettings?.llmTemperature ||
+          userSettings?.llm.llm_temperature,
         DEFAULT_ADVANCED_SETTINGS.llmTemperature,
       ),
       transcriptionPrompt: this.resolveOrDefault(
-        mergedConfig.llmSettings?.transcriptionPrompt,
+        mergedConfig.llmSettings?.transcriptionPrompt ||
+          userSettings?.llm.transcription_prompt,
         DEFAULT_ADVANCED_SETTINGS.transcriptionPrompt,
       ),
       editingPrompt: this.resolveOrDefault(
-        mergedConfig.llmSettings?.editingPrompt,
+        mergedConfig.llmSettings?.editingPrompt ||
+          userSettings?.llm.editing_prompt,
         DEFAULT_ADVANCED_SETTINGS.editingPrompt,
       ),
       noSpeechThreshold: this.resolveOrDefault(

@@ -28,14 +28,14 @@ export default function IntroducingIntelligentMode() {
               &lt; Back
             </button>
             <div className="text-2xl mb-1 font-medium">
-              Introducing VibeType Intelligent Mode
+              Introducing SmartSpeaky Intelligent Mode
             </div>
             <div className="mb-4 text-lg font-light">
               What you ask gets written.
             </div>
             {[
-              'Press Hotkey -> Speak to VibeType',
-              'VibeType sends your speech to LLM',
+              'Press Hotkey -> Speak to SmartSpeaky',
+              'SmartSpeaky sends your speech to LLM',
               'Pastes LLM output into text box',
             ].map((step, index) => (
               <div
@@ -61,7 +61,7 @@ export default function IntroducingIntelligentMode() {
               </div>
             ))}
             <Tip
-              tipText="You can also trigger Intelligent Mode by saying 'Hey VibeType' when using the regular dictation hotkey."
+              tipText="You can also trigger Intelligent Mode by saying 'Hey SmartSpeaky' when using the regular dictation hotkey."
               className="mt-3"
             />
           </div>

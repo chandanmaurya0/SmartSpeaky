@@ -1,13 +1,18 @@
-# Ito
+# SmartSpeaky
 
 <div align="center">
-  <img src="resources/build/icon.png" width="128" height="128" alt="Ito Logo" />
+  <img src="resources/build/icon.png" width="128" height="128" alt="SmartSpeaky Logo" />
   
   <h3>Smart dictation. Everywhere you want.</h3>
   
   <p>
-    <strong>Ito</strong> is an intelligent voice assistant that brings seamless voice dictation to any application on your computer. Simply hold down your trigger key, speak naturally, and watch your words appear instantly in any text field.
+    <strong>SmartSpeaky</strong> is an intelligent voice assistant that brings seamless voice dictation to any application on your computer. Simply hold down your trigger key, speak naturally, and watch your words appear instantly in any text field.
   </p>
+
+  <blockquote>
+    [!NOTE]
+    SmartSpeaky is an open-source project forked from <strong>Ito</strong>.
+  </blockquote>
 
   <p>
     <img alt="macOS" src="https://img.shields.io/badge/macOS-supported-blue?logo=apple&logoColor=white">
@@ -62,10 +67,10 @@
 
 ### Installation
 
-1. **Download the latest release** from [heyito.ai](https://www.heyito.ai/) or the [GitHub releases page](https://github.com/heyito/ito/releases)
+1. **Download the latest release** from [chandanmaurya0.github.io/SmartSpeaky](https://www.chandanmaurya0.github.io/SmartSpeaky/) or the [GitHub releases page](https://github.com/chandanmaurya0/SmartSpeaky/releases)
 
 2. **Install the application**:
-   - **macOS**: Open the `.dmg` file and drag Ito to Applications
+   - **macOS**: Open the `.dmg` file and drag SmartSpeaky to Applications
    - **Windows**: Run the `.exe` installer and follow the setup wizard
 
 3. **Grant permissions** when prompted:
@@ -89,11 +94,11 @@
 
 ### Building from Source
 
-> **Important**: Ito requires a local transcription server for voice processing. See [server/README.md](server/README.md) for detailed server setup instructions.
+> **Important**: SmartSpeaky requires a local transcription server for voice processing. See [server/README.md](server/README.md) for detailed server setup instructions.
 
 ```bash
 # Clone the repository
-git clone https://github.com/heyito/ito.git
+git clone https://github.com/chandanmaurya0/SmartSpeaky.git
 cd ito
 
 # Install dependencies
@@ -253,7 +258,7 @@ bun run lint:fix           # Fix linting issues
 
 ### Client Architecture
 
-**Ito** is built as a modern Electron application with a sophisticated multi-process architecture:
+**SmartSpeaky** is built as a modern Electron application with a sophisticated multi-process architecture:
 
 - **Main Process**: Handles system integration, permissions, and native component coordination
 - **Renderer Process**: React-based UI with real-time audio visualization
@@ -348,7 +353,7 @@ Control your data in **Settings > General**:
 
 ### Permissions
 
-**Ito** requires specific system permissions to function:
+**SmartSpeaky** requires specific system permissions to function:
 
 - **Microphone Access**: To capture your voice for transcription
 - **Accessibility Access**: To detect keyboard shortcuts and insert text
@@ -367,7 +372,7 @@ This project is open source under the GNU General Public License. You can:
 
 ## 🤝 Contributing
 
-We welcome contributions! Whether you're fixing bugs, adding features, or improving documentation, your help makes **Ito** better for everyone.
+We welcome contributions! Whether you're fixing bugs, adding features, or improving documentation, your help makes **SmartSpeaky** better for everyone.
 
 ### Getting Started
 
@@ -403,7 +408,7 @@ This project is licensed under the **GNU General Public License** - see the [LIC
 
 ## 🙏 Acknowledgments
 
-**Ito** is built with and inspired by amazing open source projects:
+**SmartSpeaky** is built with and inspired by amazing open source projects:
 
 - **[Electron React App](https://github.com/guasam/electron-react-app)** by @guasam - The foundational template that provided our modern Electron + React architecture
 - **Electron** - Cross-platform desktop apps with web technologies
@@ -416,6 +421,6 @@ This project is licensed under the **GNU General Public License** - see the [LIC
 
 ## 📞 Support
 
-- **Community**: [GitHub Discussions](https://github.com/heyito/ito/discussions)
-- **Issues**: [GitHub Issues](https://github.com/heyito/ito/issues)
-- **Website**: [heyito.ai](https://www.heyito.ai)
+- **Community**: [GitHub Discussions](https://github.com/chandanmaurya0/SmartSpeaky/discussions)
+- **Issues**: [GitHub Issues](https://github.com/chandanmaurya0/SmartSpeaky/issues)
+- **Website**: [chandanmaurya0.github.io/SmartSpeaky](https://www.chandanmaurya0.github.io/SmartSpeaky)

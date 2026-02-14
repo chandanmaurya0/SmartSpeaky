@@ -42,6 +42,10 @@ export class ItoSessionManager {
       return
     }
 
+    // Start timing the interaction BEFORE any timed operations
+    timingCollector.startInteraction()
+    timingCollector.startTiming(TimingEventName.INTERACTION_ACTIVE)
+
     // Begin gRPC stream immediately (note, no audio is flowing yet)
     this.streamResponsePromise = itoStreamController.startGrpcStream()
 
@@ -58,10 +62,6 @@ export class ItoSessionManager {
     this.fetchAndSendContext().catch(error => {
       log.error('[itoSessionManager] Failed to fetch/send context:', error)
     })
-
-    // Start timing the interaction
-    timingCollector.startInteraction()
-    timingCollector.startTiming(TimingEventName.INTERACTION_ACTIVE)
 
     return interactionId
   }

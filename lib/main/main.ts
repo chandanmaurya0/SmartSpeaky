@@ -12,13 +12,13 @@ import {
 import { initializeLogging } from './logger'
 import { registerIPC } from '../window/ipcEvents'
 import { registerDevIPC } from '../window/ipcDev'
-import { initializeDatabase } from './sqlite/db'
+// import { initializeDatabase } from './sqlite/db'
 import { setupProtocolHandling, processStartupProtocolUrl } from '../protocol'
 import { startKeyListener } from '../media/keyboard'
 // Import the grpcClient singleton
 import { grpcClient } from '../clients/grpcClient'
 import { preventAppNap } from './appNap'
-import { syncService } from './syncService'
+// import { syncService } from './syncService'
 import { checkAccessibilityPermission } from '../utils/crossPlatform'
 import mainStore, { initializeStore } from './store'
 import { STORE_KEYS } from '../constants/store-keys'
@@ -44,13 +44,13 @@ protocol.registerSchemesAsPrivileged([
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
-  // Initialize the database BEFORE logging so KV writes have a schema
-  try {
-    await initializeDatabase()
-  } catch (error) {
-    console.error('Failed to initialize database, quitting app.', error)
-    return
-  }
+  // Database initialization removed for API-only mode
+  // try {
+  //   await initializeDatabase()
+  // } catch (error) {
+  //   console.error('Failed to initialize database, quitting app.', error)
+  //   return
+  // }
 
   // Initialize KV-backed store and run migrations before anything reads/writes
   try {
@@ -86,7 +86,7 @@ app.whenReady().then(async () => {
     }
   }
 
-  syncService.start()
+  // syncService.start()
 
   // Setup protocol handling for deep links
   setupProtocolHandling()

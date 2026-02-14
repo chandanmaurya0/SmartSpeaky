@@ -19,7 +19,8 @@ import { getKeyDisplayInfo } from '@/lib/types/keyboard'
 import { usePlatform } from '@/app/hooks/usePlatform'
 
 export default function NotesContent() {
-  const { notes, loadNotes, addNote, deleteNote, updateNote } = useNotesStore()
+  const { notes, loadNotes, addNote, deleteNote, updateNote, isLoading } =
+    useNotesStore()
   const { getItoModeShortcuts } = useSettingsStore()
   const keyboardShortcut = getItoModeShortcuts(ItoMode.TRANSCRIBE)[0].keys
   const [creatingNote, setCreatingNote] = useState(false)
@@ -312,6 +313,15 @@ export default function NotesContent() {
     }
   }
 
+  /* Loading Overlay */
+  {
+    isLoading && (
+      <div className="absolute inset-0 bg-white/50 z-10 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      </div>
+    )
+  }
+
   return (
     <div
       ref={containerRef}
@@ -364,6 +374,7 @@ export default function NotesContent() {
           )}
           <textarea
             ref={textareaRef}
+            disabled={isLoading}
             className={`w-full pt-6 px-6 focus:outline-none resize-none overflow-hidden ${creatingNote ? 'cursor-text' : 'cursor-pointer'}`}
             value={noteContent}
             onChange={e => updateNoteContent(e.target.value)}
@@ -375,9 +386,10 @@ export default function NotesContent() {
             <div className="absolute bottom-3 right-3">
               <button
                 onClick={handleAddNote}
-                className="bg-neutral-200 px-4 py-2 rounded-md font-semibold hover:bg-neutral-300 cursor-pointer"
+                disabled={isLoading}
+                className="bg-neutral-200 px-4 py-2 rounded-md font-semibold hover:bg-neutral-300 cursor-pointer disabled:opacity-50"
               >
-                Add note
+                {isLoading ? 'Saving...' : 'Add note'}
               </button>
             </div>
           )}

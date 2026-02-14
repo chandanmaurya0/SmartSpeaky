@@ -16,10 +16,13 @@ services:
         condition: service_started
       createbuckets:
         condition: service_completed_successfully
+      redis:
+        condition: service_started
     environment:
       NODE_ENV: development
       S3_ENDPOINT: http://minio:9000
       DB_HOST: db
+      REDIS_HOST: redis
 
   db:
     image: postgres:16
@@ -74,6 +77,13 @@ services:
       S3_SECRET_ACCESS_KEY: '$S3_SECRET_ACCESS_KEY'
       BLOB_STORAGE_BUCKET: '$BLOB_STORAGE_BUCKET'
       TIMING_BUCKET: '$TIMING_BUCKET'
+
+  redis:
+    image: redis:alpine
+    container_name: ito-redis
+    restart: always
+    ports:
+      - '${REDIS_PORT:-6379}:6379'
 
 volumes:
   pgdata:

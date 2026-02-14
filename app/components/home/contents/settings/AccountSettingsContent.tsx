@@ -139,7 +139,7 @@ export default function AccountSettingsContent() {
               • All app settings and preferences
               <br />
               <br />
-              This will reset VibeType to its initial state.
+              This will reset SmartSpeaky to its initial state.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-3">

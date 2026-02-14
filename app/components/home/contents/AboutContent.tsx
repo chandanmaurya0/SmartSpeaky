@@ -60,7 +60,7 @@ export default function AboutContent() {
           <AboutCard
             icon={<DiscordIcon width={24} height={24} className="text-black" />}
             title="Discord"
-            description="Join the community, share feedback, and grow with VibeType."
+            description="Join the community, share feedback, and grow with SmartSpeaky."
             buttonText="Join Discord"
             onClick={handleDiscordClick}
           />
@@ -79,7 +79,7 @@ export default function AboutContent() {
                 className="w-6 h-6 text-gray-900"
                 style={{ height: '24px' }}
               />
-              <span className={`text-lg font-bold ml-2`}>VibeType</span>
+              <span className={`text-lg font-bold ml-2`}>SmartSpeaky</span>
             </div>
             <h2 className="text-lg font-semibold mb-4">
               Version {import.meta.env.VITE_VIBETYPE_VERSION}
