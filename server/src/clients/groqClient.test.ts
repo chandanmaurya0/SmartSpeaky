@@ -44,9 +44,8 @@ mock.module('dotenv', () => ({
 
 // Now we can safely import the groqClient
 const { groqClient, itoVocabulary } = await import('./groqClient.js')
-const { createTranscriptionPrompt } = await import(
-  '../prompts/transcription.js'
-)
+const { createTranscriptionPrompt } =
+  await import('../prompts/transcription.js')
 
 describe('GroqClient', () => {
   const NO_SPEECH_THRESHOLD = 0.6

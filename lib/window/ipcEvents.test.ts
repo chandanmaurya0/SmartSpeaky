@@ -118,7 +118,6 @@ describe('IPC Events Critical Business Logic Tests', () => {
 
     const result = await handler!({}, true)
     expect(result).toBe(true)
-
     ;(systemPreferences as any).askForMediaAccess = originalAsk
   })
 
@@ -136,7 +135,6 @@ describe('IPC Events Critical Business Logic Tests', () => {
 
     await handler!({ sender: 'mock' })
     expect(mockWindow.unmaximize).toHaveBeenCalled()
-
     ;(BrowserWindow as any).fromWebContents = originalFromWebContents
   })
 
