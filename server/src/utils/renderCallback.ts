@@ -113,7 +113,7 @@ export function renderCallbackPage(params: CallbackPageParams): string {
 
       <div class="auth-text" id="authText">${authText}</div>
 
-      <button class="button" onclick="openApp()">Open Ito</button>
+      <button class="button" onclick="openApp()">Open SmartSpeaky</button>
     </div>
 
     <script>
