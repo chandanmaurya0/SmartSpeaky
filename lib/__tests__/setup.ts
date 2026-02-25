@@ -268,6 +268,7 @@ beforeAll(async () => {
   await fs.mkdir('/tmp/test-ito-app', { recursive: true })
   try {
     // Import after mocking electron so the mock is applied
+    // @ts-expect-error sqlite module is optional in this test harness
     const { initializeDatabase } = await import('../main/sqlite/db')
     await initializeDatabase()
   } catch (e) {

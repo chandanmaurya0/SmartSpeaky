@@ -62,14 +62,19 @@ export const keyNameMap: Record<string, KeyName> = {
 }
 
 export type ModifierKey =
+  | 'command'
   | 'command-left'
   | 'command-right'
+  | 'control'
   | 'control-left'
   | 'control-right'
+  | 'option'
   | 'option-left'
   | 'option-right'
+  | 'shift'
   | 'shift-left'
   | 'shift-right'
+  | 'alt'
   | 'fn'
   | 'fn_fast'
 
@@ -117,6 +122,7 @@ export type RegularKey =
   | 'tab'
   | 'caps'
   | 'delete'
+  | 'f1'
   | '↑'
   | '↓'
   | '←'

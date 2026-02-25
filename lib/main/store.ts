@@ -166,7 +166,7 @@ const electronStore = new Store<AppStore>({
 })
 
 export const store = {
-  get: (key: string) => electronStore.get(key),
+  get: (key: string): any => electronStore.get(key as any),
   set: (key: string, value: any) => electronStore.set(key, value),
   delete: (key: string) => electronStore.delete(key as any),
   // Direct access if needed, properly typed
@@ -191,7 +191,7 @@ type StoreLike = {
   set: (path: string, value: any) => void
 }
 
-type Migration = { id: string; run: (s: StoreLike<AppStore>) => void }
+type Migration = { id: string; run: (s: StoreLike) => void }
 
 const migrations: Migration[] = [
   {
@@ -222,7 +222,7 @@ const migrations: Migration[] = [
 ]
 
 // ---------- Migration runner ----------
-function runMigrations(s: StoreLike<AppStore>, allMigrations: Migration[]) {
+function runMigrations(s: StoreLike, allMigrations: Migration[]) {
   const applied = new Set((s.get('appliedMigrations') as string[]) || [])
   for (const m of allMigrations) {
     if (!applied.has(m.id)) {

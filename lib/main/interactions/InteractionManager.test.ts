@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach, mock } from 'bun:test'
 import { STORE_KEYS } from '../../constants/store-keys'
 
-const mockCreateInteraction = mock(async () => ({ id: 'created-id' }))
+const mockCreateInteraction = mock(async (_payload: any) => ({ id: 'created-id' }))
 
 mock.module('../../clients/grpcClient', () => ({
   grpcClient: {
@@ -10,7 +10,7 @@ mock.module('../../clients/grpcClient', () => ({
 }))
 
 const mockMainStore = {
-  get: mock(() => ({ id: 'test-user-123' })),
+  get: mock((_key?: string) => ({ id: 'test-user-123' } as any)),
 }
 mock.module('../store', () => ({
   default: mockMainStore,

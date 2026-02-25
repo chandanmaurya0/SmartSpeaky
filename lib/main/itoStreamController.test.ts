@@ -61,6 +61,8 @@ const mockContextGrabber = {
           llmTemperature: 0.7,
           transcriptionPrompt: '',
           editingPrompt: '',
+          asrApiKey: null,
+          llmApiKey: null,
         },
         grammarServiceEnabled: false,
         macosAccessibilityContextEnabled: true,

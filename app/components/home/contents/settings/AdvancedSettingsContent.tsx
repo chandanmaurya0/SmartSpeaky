@@ -295,7 +295,7 @@ export default function AdvancedSettingsContent() {
           }
 
           const defaultValue = defaults[key] as LlmSettings[typeof key]
-          resolvedLlm[key] = defaultValue
+          ;(resolvedLlm as any)[key] = defaultValue
         }
       }
     }
@@ -337,7 +337,7 @@ export default function AdvancedSettingsContent() {
         newValue = rawValue
       }
 
-      setLlmSettings({ [config.name]: newValue })
+      setLlmSettings({ [config.name]: newValue } as Partial<LlmSettings>)
     },
     [setLlmSettings],
   )

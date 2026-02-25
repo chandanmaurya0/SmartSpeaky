@@ -5,7 +5,7 @@ const mockEnsureValidTokens = mock(async () => ({
   tokens: { access_token: 'token' },
 }))
 
-const mockGetCurrentUserId = mock(() => 'test-user-id')
+const mockGetCurrentUserId = mock((): string | null => 'test-user-id')
 
 const mockGrpcClient = {
   listNotesSince: mock(async () => [{ id: '1', content: 'Test note' }]),

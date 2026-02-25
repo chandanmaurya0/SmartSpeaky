@@ -12,6 +12,8 @@ const settings = {
   transcriptionPrompt: 'transcriptionPrompt',
   editingPrompt: 'editingPrompt',
   noSpeechThreshold: 0.7,
+  asrApiKey: null,
+  llmApiKey: null,
 }
 
 const defaults = {
@@ -24,6 +26,8 @@ const defaults = {
   transcriptionPrompt: 'defaultTranscriptionPrompt',
   editingPrompt: 'defaultEditingPrompt',
   noSpeechThreshold: 0.9,
+  asrApiKey: null,
+  llmApiKey: null,
 }
 
 describe('resolve default keys', () => {
