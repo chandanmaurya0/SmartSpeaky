@@ -16,9 +16,7 @@ import type {
 } from '../types/cursorContext'
 
 const NATIVE_MODULE_NAME = 'cursor-context'
-export class MacOSAccessibilityContextProvider
-  implements IAccessibilityContextProvider
-{
+export class MacOSAccessibilityContextProvider implements IAccessibilityContextProvider {
   #binaryPath: string | null = null
 
   constructor() {}

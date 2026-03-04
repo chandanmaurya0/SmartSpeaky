@@ -19,8 +19,7 @@ export interface CreateInteractionParams {
 export async function createInteractionWithAudio(
   params: CreateInteractionParams,
 ): Promise<Interaction> {
-  const { id, userId, title, asrOutput, llmOutput, durationMs } =
-    params
+  const { id, userId, title, asrOutput, llmOutput, durationMs } = params
 
   let rawAudioId: string | undefined
 

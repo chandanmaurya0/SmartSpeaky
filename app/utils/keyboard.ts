@@ -300,6 +300,9 @@ export class KeyState {
    * @param event The key event from the global key listener
    */
   update(event: KeyEvent) {
+    // Keep this read to preserve constructor/updateShortcut API semantics.
+    void this.shortcut
+
     // Use keyNameMap for proper directional key preservation
     const key = keyNameMap[event.key] || event.key.toLowerCase()
 

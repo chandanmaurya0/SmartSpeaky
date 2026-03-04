@@ -5,7 +5,7 @@ const mockEnsureValidTokens = mock(async () => ({
   tokens: { access_token: 'token' },
 }))
 
-const mockGetCurrentUserId = mock(() => 'test-user-id')
+const mockGetCurrentUserId = mock((): string | null => 'test-user-id')
 
 const mockGrpcClient = {
   listNotesSince: mock(async () => [{ id: '1', content: 'Test note' }]),
@@ -118,7 +118,6 @@ describe('IPC Events Critical Business Logic Tests', () => {
 
     const result = await handler!({}, true)
     expect(result).toBe(true)
-
     ;(systemPreferences as any).askForMediaAccess = originalAsk
   })
 
@@ -136,7 +135,6 @@ describe('IPC Events Critical Business Logic Tests', () => {
 
     await handler!({ sender: 'mock' })
     expect(mockWindow.unmaximize).toHaveBeenCalled()
-
     ;(BrowserWindow as any).fromWebContents = originalFromWebContents
   })
 
