@@ -1,6 +1,6 @@
 {
   "name": "smartspeaky",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "SmartSpeaky, a smart voice assistant",
   "main": "./out/main/main.js",
   "license": "MIT",

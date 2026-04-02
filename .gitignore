@@ -16,6 +16,8 @@ out.json
 tsconfig.node.tsbuildinfo
 server/deploy-dev.sh
 
+smartspeaky_build_release.md
+
 # Sentry Config File
 .env.sentry-build-plugin
 .electron-builder-cache
