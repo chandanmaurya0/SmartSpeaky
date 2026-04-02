@@ -1,12 +1,10 @@
 import {
   ItoService,
-  TimingService,
   AudioChunk,
   Note as NotePb,
   Interaction as InteractionPb,
   DictionaryItem as DictionaryItemPb,
   AdvancedSettings as AdvancedSettingsPb,
-  TimingReport,
   CreateNoteRequestSchema,
   UpdateNoteRequestSchema,
   DeleteNoteRequestSchema,
@@ -22,7 +20,6 @@ import {
   DeleteUserDataRequestSchema,
   GetAdvancedSettingsRequestSchema,
   UpdateAdvancedSettingsRequestSchema,
-  SubmitTimingReportsRequestSchema,
   ItoMode,
   TranscribeStreamRequest,
 } from '@/app/generated/ito_pb'
@@ -45,7 +42,6 @@ import { getActiveWindow } from '../media/active-application'
 
 class GrpcClient {
   private client: ReturnType<typeof createClient<typeof ItoService>>
-  private timingClient: ReturnType<typeof createClient<typeof TimingService>>
   private authToken: string | null = null
   private mainWindow: BrowserWindow | null = null
   private isRefreshingTokens: boolean = false
@@ -60,7 +56,6 @@ class GrpcClient {
       import.meta.env.VITE_GRPC_BASE_URL,
     )
     this.client = createClient(ItoService, transport)
-    this.timingClient = createClient(TimingService, transport)
   }
 
   setMainWindow(window: BrowserWindow) {
@@ -524,17 +519,6 @@ class GrpcClient {
         },
       })
       return await this.client.updateAdvancedSettings(request, {
-        headers: this.getHeaders(),
-      })
-    })
-  }
-
-  async submitTimingReports(reports: TimingReport[]) {
-    return this.withRetry(async () => {
-      const request = create(SubmitTimingReportsRequestSchema, {
-        reports,
-      })
-      return await this.timingClient.submitTimingReports(request, {
         headers: this.getHeaders(),
       })
     })

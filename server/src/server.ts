@@ -3,7 +3,6 @@ import { fastifyConnectPlugin } from '@connectrpc/connect-fastify'
 import { createContextValues } from '@connectrpc/connect'
 import Auth0 from '@auth0/auth0-fastify-api'
 import itoServiceRoutes from './services/ito/itoService.js'
-import timingServiceRoutes from './services/ito/timingService.js'
 import { kUser } from './auth/userContext.js'
 import { errorInterceptor } from './services/errorInterceptor.js'
 import { loggingInterceptor } from './services/loggingInterceptor.js'
@@ -146,7 +145,6 @@ export const startServer = async () => {
     await fastify.register(fastifyConnectPlugin, {
       routes: router => {
         itoServiceRoutes(router)
-        timingServiceRoutes(router)
       },
       // Order matters: logging -> validation -> error handling
       interceptors: [

@@ -35,7 +35,6 @@ export interface FargateTaskConfig {
   clientLogGroup: ILogGroup
   serverLogGroup: ILogGroup
   blobStorageBucketName?: string
-  timingBucketName?: string
 }
 
 export interface FargateTaskResources {
@@ -150,9 +149,6 @@ export function createFargateTask(
       CLIENT_LOG_GROUP_NAME: config.clientLogGroup.logGroupName,
       ...(config.blobStorageBucketName && {
         BLOB_STORAGE_BUCKET: config.blobStorageBucketName,
-      }),
-      ...(config.timingBucketName && {
-        TIMING_BUCKET: config.timingBucketName,
       }),
       ITO_ENV: config.stageName,
       SHOW_ALL_REQUEST_LOGS: 'true',
