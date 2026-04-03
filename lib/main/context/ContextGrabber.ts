@@ -8,7 +8,6 @@ import {
 } from '../../media/selected-text-reader'
 import { canGetContextFromCurrentApp } from '../../utils/applicationDetection'
 import log from 'electron-log'
-import { timingCollector, TimingEventName } from '../timing/TimingCollector'
 import { macOSAccessibilityContextProvider } from '../../media/macOSAccessibilityContextProvider'
 
 export interface ContextData {
@@ -34,10 +33,7 @@ export class ContextGrabber {
     const vocabularyWords = await this.getVocabulary()
 
     // Get active window context
-    const { windowTitle, appName } = await timingCollector.timeAsync(
-      TimingEventName.WINDOW_CONTEXT_GATHER,
-      async () => await this.getWindowContext(),
-    )
+    const { windowTitle, appName } = await this.getWindowContext()
 
     // Get selected text if in EDIT mode
     const contextText = await this.getContextText(mode)
@@ -103,16 +99,12 @@ export class ContextGrabber {
       macOSAccessibilityContextProvider.isRunning()
     ) {
       try {
-        const result = await timingCollector.timeAsync(
-          TimingEventName.CURSOR_CONTEXT_GATHER,
-          async () =>
-            await macOSAccessibilityContextProvider.getCursorContext({
-              maxCharsBefore: 1000,
-              maxCharsAfter: 1000,
-              timeout: 500,
-              debug: false,
-            }),
-        )
+        const result = await macOSAccessibilityContextProvider.getCursorContext({
+          maxCharsBefore: 1000,
+          maxCharsAfter: 1000,
+          timeout: 500,
+          debug: false,
+        })
 
         if (result.success && result.context?.selectedText) {
           console.log(
@@ -131,10 +123,7 @@ export class ContextGrabber {
     // Fallback to keyboard-based method
     console.log('[ContextGrabber] Using keyboard method for selected text')
     try {
-      const text = await timingCollector.timeAsync(
-        TimingEventName.SELCTED_TEXT_GATHER,
-        async () => await getSelectedTextString(),
-      )
+      const text = await getSelectedTextString()
       console.log('[ContextGrabber] Selected text from keyboard:', text)
       return text && text.trim().length > 0 ? text : ''
     } catch (error) {

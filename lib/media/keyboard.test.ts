@@ -2,7 +2,6 @@ import { ItoMode } from '@/app/generated/ito_pb'
 import { describe, test, expect, beforeEach, mock } from 'bun:test'
 import { EventEmitter } from 'events'
 import { fakeTimers } from '../__tests__/helpers/testUtils'
-import { createMockTimingCollector } from '../__tests__/setup'
 
 const clock = fakeTimers()
 
@@ -100,10 +99,6 @@ mock.module('../main/itoSessionManager', () => ({
   itoSessionManager: mockitoSessionManager,
 }))
 
-const mockTimingCollector = createMockTimingCollector()
-mock.module('../main/timing/TimingCollector', () => ({
-  timingCollector: mockTimingCollector,
-}))
 
 const mockInteractionManager = {
   getCurrentInteractionId: mock(() => 'test-interaction-123'),
@@ -140,11 +135,7 @@ describe('Keyboard Module', () => {
     mockitoSessionManager.setMode.mockClear()
     mockitoSessionManager.cancelSession.mockClear()
     Object.values(mockInteractionManager).forEach(mockFn => mockFn.mockClear())
-    Object.values(mockTimingCollector).forEach(mockFn => {
-      if (typeof mockFn === 'function' && 'mockClear' in mockFn) {
-        mockFn.mockClear()
-      }
-    })
+
 
     // Reset default behaviors
     mockInteractionManager.getCurrentInteractionId.mockReturnValue(

@@ -26,12 +26,6 @@ mock.module('electron-log', () => ({
   },
 }))
 
-mock.module('../timing/TimingCollector', () => ({
-  timingCollector: {
-    clearInteraction: mock(),
-  },
-}))
-
 import { BrowserWindow } from 'electron'
 import { InteractionManager } from './InteractionManager'
 
