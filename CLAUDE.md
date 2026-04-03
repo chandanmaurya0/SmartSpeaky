@@ -1,15 +1,52 @@
-# Claude Context for ITO Project
+# Claude Context for SmartSpeaky
 
 ## Project Overview
 
-This is the ITO project - an AI assistant application with both client and server components.
+SmartSpeaky is an intelligent voice dictation desktop app (Electron) forked from ITO. It enables global voice-to-text in any application using AI transcription via a local gRPC server.
 
 ## Project Structure
 
-- `app/` - Client application code
-- `server/` - Server-side code with gRPC services
-- `server/src/ito.proto` - Protocol buffer definitions
-- `server/src/clients/` - Various client implementations (Groq, LLM providers, etc.)
+```
+SmartSpeaky/
+├── app/                  # Electron renderer (React frontend)
+│   ├── components/       # React components
+│   ├── hooks/            # Custom React hooks
+│   ├── store/            # Zustand state management
+│   ├── styles/           # TailwindCSS styles
+│   ├── utils/            # Frontend utilities
+│   ├── media/            # Frontend media helpers
+│   └── generated/        # Auto-generated protobuf types
+├── lib/                  # Shared library (Electron main process)
+│   ├── main/             # Main process logic (session, interactions, etc.)
+│   ├── media/            # Audio/keyboard native interfaces
+│   ├── preload/          # Preload scripts & IPC bridge
+│   ├── auth/             # Authentication helpers
+│   ├── clients/          # gRPC client implementations
+│   ├── constants/        # Shared constants
+│   ├── protocol/         # Protocol definitions
+│   ├── types/            # Shared TypeScript types
+│   ├── utils/            # Shared utilities
+│   └── window/           # Window management
+├── native/               # Native components (Rust/Swift)
+│   ├── audio-recorder/   # Audio capture (Rust)
+│   ├── global-key-listener/ # Keyboard events (Rust)
+│   ├── text-writer/      # Text insertion (Rust)
+│   ├── active-application/ # Active window detection (Rust)
+│   ├── selected-text-reader/ # Selected text extraction (Rust)
+│   ├── cursor-context/   # Cursor context (Swift)
+│   └── macos-text/       # macOS-specific text handling (Swift)
+├── server/               # gRPC transcription server
+│   ├── src/              # Server implementation
+│   │   ├── ito.proto     # Protocol buffer definitions
+│   │   ├── clients/      # LLM provider clients (Groq, etc.)
+│   │   ├── services/     # gRPC service implementations
+│   │   ├── db/           # Database access
+│   │   └── migrations/   # DB migrations
+│   └── infra/            # AWS CDK infrastructure
+├── scripts/              # Build and utility scripts
+├── resources/            # Build resources & assets
+└── build/                # Build configuration
+```
 
 ## Branch
 
@@ -18,11 +55,16 @@ Main development branch: `dev`
 ## Development Commands
 
 - Dev: `bun dev` (starts electron-vite dev with watch)
-- Server: `docker compose up --build` (run from server directory)
-- Build: `bun build:app:mac` or `bun build:app:windows`
-- Test: `bun runAllTests` (runs lib, server, and native tests)
+- Dev with Rust rebuild: `bun dev:rust` (builds Rust binaries then starts dev)
+- Server: `docker compose up --build` (run from `server/` directory)
+- Build app (macOS): `bun build:mac`
+- Build app (Windows): `bun build:win`
+- Build Rust binaries (macOS): `bun build:rust:mac`
+- Build Rust binaries (Windows): `bun build:rust:win`
+- Test: `bun runAllTests` (runs lib, server, app, and native tests)
   - Lib tests: `bun runLibTests`
   - Server tests: `bun runServerTests`
+  - App tests: `bun runAppTests`
   - Native tests: `bun runNativeTests` (or see "Native Binary Tests" section)
 - Lint:
   - TypeScript: `bun lint` (check) or `bun lint:fix` (fix)
@@ -60,11 +102,13 @@ cargo test
 
 ### Native Modules
 
-- `global-key-listener` - Keyboard event capture and hotkey management
-- `audio-recorder` - Audio recording with sample rate conversion
-- `text-writer` - Cross-platform text input simulation
-- `active-application` - Active window detection
-- `selected-text-reader` - Selected text extraction
+- `global-key-listener` - Keyboard event capture and hotkey management (Rust)
+- `audio-recorder` - Audio recording with sample rate conversion (Rust)
+- `text-writer` - Cross-platform text input simulation (Rust)
+- `active-application` - Active window detection (Rust)
+- `selected-text-reader` - Selected text extraction (Rust)
+- `cursor-context` - Cursor context detection (Swift, macOS)
+- `macos-text` - macOS-specific text handling (Swift)
 
 ### Linting and Formatting
 
@@ -107,11 +151,6 @@ Native tests and builds are integrated into the existing CI workflows:
 - Runs automatically on all pushes and PRs via the CI controller
 - Ensures binaries compile correctly for both platforms before merging
 
-**Release Builds** (`.github/workflows/build.yml`):
-
-- Full release compilation happens during tagged releases
-- Also includes compilation verification before packaging
-
 ## Code Style Preferences
 
 - Keep code as simple as possible
@@ -123,8 +162,21 @@ Native tests and builds are integrated into the existing CI workflows:
 
 ## Tech Stack
 
-- TypeScript
-- bun
-- gRPC with Protocol Buffers
-- React (for UI components)
+**Client (Electron app)**
+- TypeScript, Bun
+- Electron + electron-vite
+- React 19, TailwindCSS v4, Zustand, Framer Motion
+- gRPC (connectrpc) with Protocol Buffers
+- SQLite (local storage), electron-store (settings)
+- Auth0 (authentication), Sentry (error tracking)
+
+**Server**
+- TypeScript, Bun
+- gRPC (Protocol Buffers via `ito.proto`)
+- PostgreSQL (via Docker), database migrations
 - Various LLM providers (Groq, etc.)
+- AWS CDK for infrastructure
+
+**Native Components**
+- Rust (audio recording, keyboard events, text insertion, window detection)
+- Swift (macOS cursor context and text handling)
