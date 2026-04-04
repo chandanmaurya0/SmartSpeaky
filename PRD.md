@@ -23,6 +23,7 @@ Issues identified from production logs (March 2026).
 **Status:** Likely resolved server-side (no client-side change needed)
 
 **Symptom:**
+
 - `Failed to fetch interactions: ConnectError: [internal] Internal server error`
 - `Failed to fetch dictionary: ConnectError: [internal] Internal server error`
 - `Failed to fetch notes: ConnectError: [internal] Internal server error`

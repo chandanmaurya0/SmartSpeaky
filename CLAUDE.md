@@ -163,6 +163,7 @@ Native tests and builds are integrated into the existing CI workflows:
 ## Tech Stack
 
 **Client (Electron app)**
+
 - TypeScript, Bun
 - Electron + electron-vite
 - React 19, TailwindCSS v4, Zustand, Framer Motion
@@ -171,6 +172,7 @@ Native tests and builds are integrated into the existing CI workflows:
 - Auth0 (authentication), Sentry (error tracking)
 
 **Server**
+
 - TypeScript, Bun
 - gRPC (Protocol Buffers via `ito.proto`)
 - PostgreSQL (via Docker), database migrations
@@ -178,5 +180,6 @@ Native tests and builds are integrated into the existing CI workflows:
 - AWS CDK for infrastructure
 
 **Native Components**
+
 - Rust (audio recording, keyboard events, text insertion, window detection)
 - Swift (macOS cursor context and text handling)

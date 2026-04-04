@@ -29,7 +29,7 @@ import { initializeMicrophoneSelection } from '../media/microphoneSetUp'
 import { validateStoredTokens, ensureValidTokens } from '../auth/events'
 import { Auth0Config, validateAuth0Config } from '../auth/config'
 import { createAppTray } from './tray'
-import { initializeAutoUpdater } from './autoUpdaterWrapper'
+// import { initializeAutoUpdater } from './autoUpdaterWrapper'
 import { teardown } from './teardown'
 import { ITO_ENV } from './env'
 

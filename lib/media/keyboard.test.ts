@@ -99,7 +99,6 @@ mock.module('../main/itoSessionManager', () => ({
   itoSessionManager: mockitoSessionManager,
 }))
 
-
 const mockInteractionManager = {
   getCurrentInteractionId: mock(() => 'test-interaction-123'),
   initialize: mock(() => 'test-interaction-123'),
@@ -135,7 +134,6 @@ describe('Keyboard Module', () => {
     mockitoSessionManager.setMode.mockClear()
     mockitoSessionManager.cancelSession.mockClear()
     Object.values(mockInteractionManager).forEach(mockFn => mockFn.mockClear())
-
 
     // Reset default behaviors
     mockInteractionManager.getCurrentInteractionId.mockReturnValue(

@@ -99,12 +99,14 @@ export class ContextGrabber {
       macOSAccessibilityContextProvider.isRunning()
     ) {
       try {
-        const result = await macOSAccessibilityContextProvider.getCursorContext({
-          maxCharsBefore: 1000,
-          maxCharsAfter: 1000,
-          timeout: 500,
-          debug: false,
-        })
+        const result = await macOSAccessibilityContextProvider.getCursorContext(
+          {
+            maxCharsBefore: 1000,
+            maxCharsAfter: 1000,
+            timeout: 500,
+            debug: false,
+          },
+        )
 
         if (result.success && result.context?.selectedText) {
           console.log(

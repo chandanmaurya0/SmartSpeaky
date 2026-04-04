@@ -245,7 +245,6 @@ mock.module('electron-store', () => {
 
 console.log('✓ Electron module mocked')
 
-
 // Ensure node:path join maps to path.join when tests mock path
 const pathMod = await import('path')
 mock.module('node:path', () => ({ join: (pathMod as any).join }))
