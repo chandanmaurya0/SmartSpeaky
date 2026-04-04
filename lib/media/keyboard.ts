@@ -34,7 +34,7 @@ let activeShortcutId: string | null = null
 let lastHeartbeatReceived = Date.now()
 let heartbeatCheckTimer: NodeJS.Timeout | null = null
 const HEARTBEAT_CHECK_INTERVAL_MS = 5000 // Check every 5 seconds
-const HEARTBEAT_TIMEOUT_MS = 15000 // 15 seconds without heartbeat triggers restart
+const HEARTBEAT_TIMEOUT_MS = 30000 // 30 seconds without heartbeat triggers restart
 
 // Test utility function - only available in development
 export const resetForTesting = () => {
@@ -277,14 +277,11 @@ export const startKeyListener = () => {
     KeyListenerProcess = spawn(binaryPath, [], {
       stdio: ['pipe', 'pipe', 'pipe'],
       env,
-      detached: true,
     })
 
     if (!KeyListenerProcess) {
       throw new Error('Failed to spawn process')
     }
-
-    KeyListenerProcess.unref()
 
     let buffer = ''
     KeyListenerProcess.stdout?.on('data', data => {
@@ -327,7 +324,7 @@ export const startKeyListener = () => {
     })
 
     KeyListenerProcess.stderr?.on('data', data => {
-      console.error('[Key listener] stderr:', data.toString())
+      console.log('[Key listener] stderr:', data.toString())
     })
 
     KeyListenerProcess.on('error', error => {

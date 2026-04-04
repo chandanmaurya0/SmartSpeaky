@@ -164,8 +164,8 @@ app.whenReady().then(async () => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // Initialize auto-updater
-  initializeAutoUpdater()
+  // Auto-updater disabled — re-enable by uncommenting the line below
+  // initializeAutoUpdater()
 
   // Set up periodic token refresh check (every 10 minutes)
   setInterval(

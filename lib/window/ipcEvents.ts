@@ -572,7 +572,6 @@ export function registerIPC() {
   })
 
   handleIPC('update-advanced-settings', async (_e, advancedSettings) => {
-    console.log('Updating advanced settings:', advancedSettings)
     const { grpcClient } = await import('../clients/grpcClient')
     const result = await grpcClient.updateAdvancedSettings(advancedSettings)
     return result

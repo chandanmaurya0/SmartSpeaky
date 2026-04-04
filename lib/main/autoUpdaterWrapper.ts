@@ -101,7 +101,15 @@ function setupAutoUpdaterEvents() {
   })
 
   autoUpdater.on('error', error => {
-    console.error('Auto updater error:', error)
+    const isOffline =
+      error?.message?.includes('ERR_INTERNET_DISCONNECTED') ||
+      error?.message?.includes('net::ERR_') ||
+      error?.message?.includes('ENOTFOUND')
+    if (isOffline) {
+      console.warn('Auto updater skipped: device appears to be offline')
+    } else {
+      console.error('Auto updater error:', error)
+    }
   })
 
   autoUpdater.on('download-progress', progressObj => {

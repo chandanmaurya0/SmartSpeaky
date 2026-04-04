@@ -151,6 +151,12 @@ export const validateStoredTokens = async (config?: any) => {
           if (refreshResult.success) {
             console.log('Successfully refreshed expired tokens')
             return true
+          } else if (refreshResult.isNetworkError) {
+            // Offline — keep credentials, app will retry on next opportunity
+            console.log(
+              'Token refresh skipped due to network unavailability, keeping auth data',
+            )
+            return false
           } else {
             console.log('Token refresh failed, clearing auth data')
           }
@@ -341,6 +347,19 @@ export const handleLogout = () => {
   // syncService.stop()
 }
 
+function isNetworkError(error: unknown): boolean {
+  if (!(error instanceof Error)) return false
+  const msg = error.message.toLowerCase()
+  return (
+    error instanceof TypeError ||
+    msg.includes('fetch failed') ||
+    msg.includes('enotfound') ||
+    msg.includes('econnrefused') ||
+    msg.includes('err_internet_disconnected') ||
+    msg.includes('network')
+  )
+}
+
 export const refreshTokens = async (refreshToken: string, config: any) => {
   try {
     const tokenParams = new URLSearchParams({
@@ -377,6 +396,7 @@ export const refreshTokens = async (refreshToken: string, config: any) => {
 
     return {
       success: true,
+      isNetworkError: false,
       tokens: {
         ...tokens,
         expires_at: expiresAt,
@@ -385,9 +405,15 @@ export const refreshTokens = async (refreshToken: string, config: any) => {
       },
     }
   } catch (error) {
-    console.error('Token refresh error:', error)
+    const networkError = isNetworkError(error)
+    if (networkError) {
+      console.warn('Token refresh skipped: device appears to be offline')
+    } else {
+      console.error('Token refresh error:', error)
+    }
     return {
       success: false,
+      isNetworkError: networkError,
       error: error instanceof Error ? error.message : 'Unknown error',
     }
   }
@@ -438,8 +464,11 @@ export const ensureValidTokens = async (config: any) => {
       }
 
       return { success: true, tokens: refreshResult.tokens }
+    } else if (refreshResult.isNetworkError) {
+      // Device is offline — keep existing credentials, retry when back online
+      return refreshResult
     } else {
-      // Refresh failed, clear auth data
+      // Actual auth failure (invalid/revoked token) — clear auth data
       console.log('Token refresh failed, clearing auth data')
       handleLogout()
 

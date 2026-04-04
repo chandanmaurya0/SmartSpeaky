@@ -500,8 +500,6 @@ class GrpcClient {
       return null
     }
 
-    console.log('Updating advanced settings:', settings.llm)
-
     return this.withRetry(async () => {
       const request = create(UpdateAdvancedSettingsRequestSchema, {
         llm: {
